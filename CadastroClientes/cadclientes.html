@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Cliente</title>
+  <link rel="stylesheet" href="cadclientes.css" />
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Cliente</h1>
+    <form class="formulario" id="formCliente">
+     
+      <!-- DADOS PESSOAIS -->
+      <h3>DADOS</h3>
+      <div class="dados">
+        <div class="dados1">
+          <label for="nome">Nome:</label>
+          <input type="text" id="nome" name="nome" />
+        </div>
+
+        <div class="dados2">
+          <label for="profissao">Segmento:</label>
+          <select class="profissao" name="profissao" id="profissao">
+            <option value="" disabled selected hidden>---Selecione um Segmento---</option>
+            <option value="Medicina Geral">Medicina Geral</option>
+            <option value="Estética">Estética</option>
+            <option value="Odontologia">Odontologia</option>
+            <option value="Veterinária">Veterinária</option>
+            <option value="Serralheria">Serralheria</option>
+            <option value="Tornearia">Tornearia</option>
+            <option value="Metalurgica">Metalurgica</option>
+            <option value="Mecanica">Mecânica</option>
+            <option value="Joalheria">Joalheria</option>
+            <option value="Próteses">Próteses</option>
+            <option value="Pesca">Pesca</option>
+            <option value="Ferro-Velho">Ferro-Velho</option>
+            <option value="Refrigeracao">Refrigeração</option>
+            <option value="Alimenticios">Alimentícios</option>
+            <option value="Festa">Festa</option>
+          </select>
+
+          <label for="documento">CPF/CNPJ:</label>
+          <input type="text" id="documento" name="documento" maxlength="18" />
+        </div>
+      </div>
+
+      <!-- CONTATO -->
+      <h3>CONTATO</h3>
+      <div class="contato">
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" name="telefone" maxlength="13" />
+        <label for="email">Email:</label>
+        <input type="email" id="email" name="email" />
+      </div>
+
+      <!-- ENDEREÇO -->
+      <h3>ENDEREÇO</h3>
+      <div class="radio-group" id="areas">
+        <input type="radio" name="area" id="urbana" value="urbana">
+        <label for="urbana">Urbano</label>
+        <input type="radio" name="area" id="rural" value="rural">
+        <label for="rural">Rural</label>
+      </div>
+
+      <!--ENDEREÇO URBANO-->
+      <div id="form-urbano">
+        <div class="end">
+          <div class="end1">
+            <label for="endereco">Logradouro:</label>
+            <input type="text" id="endereco" name="endereco" />
+            <label for="numero">Número:</label>
+            <input type="text" id="numero" name="numero" />
+          </div>
+          <div class="end2">
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" name="cep" />
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" name="cidade" />
+            <label for="complemento">Complemento:</label>
+            <input type="text" id="complemento" name="complemento" />
+          </div>
+        </div>
+      </div>
+
+      <!--ENDEREÇO RURAL-->
+      <div id="form-rural">
+        <div class="end3">
+          <label for="municipio">Município:</label>
+          <input type="text" name="municipio" id="municipio">
+          <label for="ponto">Ponto de Referência:</label>
+          <input type="text" name="ponto" id="ponto">
+        </div>
+      </div>
+
+      <!-- CILINDRO -->
+      <h3>CILINDRO</h3>
+      <div id="container-cilindros"></div>
+
+      <!-- TEMPLATE OCULTO -->
+      <div id="template-cilindro" style="display: none;">
+        <div class="grupo-cilindro">
+          <button type="button" class="remover-cilindro">
+            <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-status/128/user-trash-icon.png" class="lixo">
+          </button>
+          
+          <hr>
+          
+          <!-- Gás e tamanho -->
+          <div class="selectam">
+            <label>Gás:</label>
+            <select class="gas">
+              <option value="" disabled selected hidden></option>
+              <option value="OM">Oxigênio Medicinal</option>
+              <option value="AC">Ar Comprimido</option>
+              <option value="ON">Óxido Nitroso</option>
+              <option value="OI">Oxigênio Industrial</option>
+              <option value="Arg">Argônio</option>
+              <option value="Hel">Gás Hélio</option>
+              <option value="Ace">Acetileno</option>
+              <option value="GS">Mistura/Gás de Solda</option>
+              <option value="Nit">Nitrogênio</option>
+              <option value="CO2">CO2</option>
+              <option value="conserv">Conservare</option>
+              <option value="etil">Etil</option>
+              <option value="usp">CO2 USP</option>
+            </select>
+            <label>Tamanho:</label>
+            <select class="tamanho">
+              <option value="">Escolha um Tamanho</option>
+            </select>
+          </div>
+
+          <!-- Tipo de cilindro -->
+          <div class="ops">
+            <label>Preço do Gás:</label>
+            <input type="text" class="preco-gas">
+            <input type="hidden" class="preco-gas-numerico">
+            
+            <div class="radio-group">
+              <label>Quantidade:</label>
+              <input type="text" class="qnt">
+              
+              <label for="aplic"><input type="radio" name="cilindro-temporario" value="Aplicado"> Cilindro Aplicado</label>
+              <label for="prop"><input type="radio" name="cilindro-temporario" value="Próprio"> Cilindro Próprio</label>
+            </div>
+          </div>
+
+        
+
+          <!-- Locação -->
+          <div class="loc">
+            <label>Locação de Cilindro:</label>
+            <div class="radio-group">
+              <label><input type="radio" name="locacao-temporario" value="Sim"> Sim</label>
+              <label><input type="radio" name="locacao-temporario" value="Não"> Não</label>
+            </div>
+              <!-- Aplicação (condicional) -->
+          <div class="condicional" data-show-if="Aplicado">
+            <label>Inicio da Aplicação:</label>
+            <input type="date" class="aplicacao" name="aplicacao" data-obrigatorio>
+          </div>
+          </div>
+
+          <!-- Preço da locação (condicional) -->
+          <div class="posloc">
+            <h3>LOCAÇÃO:</h3>
+            <label>Preço da Locação:</label>
+            <input type="text" class="preco-locacao"/>
+            <input type="hidden" class="preco-locacao-numerico">
+            
+            <div class="radio-group">
+              <label for="periloc">Locação é de periodo:</label>
+              <div class="detint">
+                <label><input type="radio" name="detint-temporario" value="Determinado"> Determinado</label>
+                <label for="indet"><input type="radio" name="detint-temporario" value="Indeterminado"> Indeterminado</label>
+              </div>
+            </div>
+          </div>
+
+          <!-- Período determinado -->
+          <div class="perloc">
+            <div class="per"><label>Período da Locação:</label></div>
+            <div class="inifim">
+              <label>De:</label>
+              <input type="date" class="inicio_determinado">
+              <label>Até:</label>
+              <input type="date" class="fim_determinado">
+            </div>
+          </div>
+
+          <!-- Período indeterminado -->
+          <div class="intloc">
+            <div class="peri"><label>Período da Locação:</label></div>
+            <div class="fini">
+              <label>Início da Locação:</label>
+              <input type="date" class="inicio_indeterminado">
+            </div>  
+          </div>
+        </div>
+      </div>
+
+      <button type="button" onclick="adicionarCilindro()">Adicionar Cilindro</button>
+      <button type="submit">Cadastrar</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="cadcliente.js"></script>
+</body>
+</html>

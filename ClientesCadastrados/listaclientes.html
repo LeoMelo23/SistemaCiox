@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <link rel="shortcut icon" href="logo.png" type="image/x-icon">
+  <link rel="stylesheet" href="listaclientes.css">
+  <title>Clientes Cadastrados</title>
+</head>
+<body>
+  <h1>Clientes Cadastrados</h1>
+  <input 
+  type="text" 
+  id="filtroRapido" 
+  placeholder="Buscar (ID, Nome, Segmento, CPF...)" 
+>
+
+<div id="filtro-avancado">
+  <h3>Filtro Avançado</h3>
+  <form id="form-filtro">
+    <select id="filtro-gas">
+       <option value="">Todos os gases</option>
+      <option value="OM">Oxigênio Medicinal</option>
+              <option value="AC">Ar Comprimido</option>
+              <option value="ON">Óxido Nitroso</option>
+              <option value="OI">Oxigênio Industrial</option>
+              <option value="Arg">Argônio</option>
+              <option value="Hel">Gás Hélio</option>
+              <option value="Ace">Acetileno</option>
+              <option value="GS">Mistura/Gás de Solda</option>
+              <option value="Nit">Nitrogênio</option>
+              <option value="CO2">CO2</option>
+              <option value="conserv">Conservare</option>
+              <option value="etil">Etil</option>
+              <option value="usp">CO2 USP</option>
+    </select>
+
+      <select id="filtro-tamanho" disabled>
+    <option value="">Todos</option>
+  </select>
+
+    <select id="filtro-proprietario">
+      <option value="">Todos</option>
+      <option value="Aplicado">Aplicado</option>
+      <option value="Próprio">Próprio</option>
+    </select>
+
+    <select id="filtro-locacao">
+      <option value="">Todos</option>
+      <option value="Sim">Locação</option>
+      <option value="Não">Não</option>
+    </select>
+
+    <button type="submit">Filtrar</button>
+    <button type="button" id="reset-filtro">Limpar</button>
+  </form>
+</div>
+
+
+  <table id="tabela" class="tabela">
+    <thead>
+      <tr>
+        <th>ID</th>
+        <th>Nome</th>
+        <th>Segmento</th>
+        <th>CPF/CNPJ</th>
+        <th>Telefone</th>
+        <th>Email</th>
+        <th>Área</th>
+        <th>Cidade/Municipio</th>
+        <th>Criado em</th>
+        <th></th>
+      </tr>
+    </thead>
+    <tbody></tbody>
+    
+  </table>
+
+  
+
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="listaclientes.js"></script>
+</body>
+</html>

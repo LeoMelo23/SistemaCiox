@@ -1,0 +1,36 @@
+# Node / builds
+node_modules/
+dist/
+build/
+migrate.js
+server.js
+package-lock.json
+package.json
+
+# sistema
+.DS_Store
+Thumbs.db
+
+# env / secrets
+.env
+.env.local
+.env.*.local
+
+# IDE
+.vscode/
+.idea/
+
+# banco / dados locais
+data/
+*.db
+sistemaciox.db
+
+# logs
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+
+
+# arquivos de imagem grandes que não queira subir (opcional)
+# imagens geradas, etc.
+

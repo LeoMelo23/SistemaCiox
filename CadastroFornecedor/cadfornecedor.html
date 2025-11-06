@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Cadastro de Fornecedores</title>
+    <link rel="shortcut icon" href="certo.png" type="image/x-icon">
+    <link rel="stylesheet" href="cadfornecedor.css">
+</head>
+<body>
+    <div class="container">
+        <h1>Cadastro de Fornecedor</h1>
+        <form class="formulario" onsubmit="cadastrar(event)">
+
+        <!--DADOS-->
+        <h3>DADOS</h3>
+        <div class="dados">
+            <div class="dados1">
+                <label for="razao">Razão Social:</label>
+                <input type="text" id="razao" name="razao">
+                <label for="estadual">Inscrição Estadual:</label>
+                <input type="text" id="estadual" name="estadual">
+               
+                
+            </div>
+
+            <div class="dados3">
+                <label for="fantasia">Nome Fantasia:</label>
+                <input type="text" id="fantasia" name="fantasia">
+                   <label for="cnpj">CNPJ:</label>
+                <input type="text" name="cnpj" id="cnpj" maxlength="18">
+           
+                
+            </div>
+
+        </div>
+
+         <!-- CONTATO -->
+        <h3>CONTATO</h3>
+    <div class="contato">
+        <div class="contato1">
+            <label for="nomecontato">Nome Contato:</label>
+            <input type="text" name="nomecontato" id="nomecontato">
+        </div>
+        <div class="contato2">
+            <label for="telefone">Telefone:</label>
+            <input type="tel" id="telefone" name="telefone" maxlength="13" />
+            <label for="email">Email:</label>
+            <input type="email" id="email" name="email" />
+        </div>
+    </div>
+
+        <!--ENDEREÇO-->
+        <h3>ENDEREÇO</h3>
+        <div class="endereco">
+            <div class="end1">
+                <label for="logradouro">Logradouro:</label>
+                <input type="text" name="endereco" id="endereco">
+                 <label for="cep">CEP:</label>
+                <input type="text" id="cep" name="cep" maxlength="9" />
+            </div>
+            <div class="end2">
+                <label for="cidade">Cidade:</label>
+                <input type="text" id="cidade" name="cidade" />
+                 <label for="uf">Estado (UF):</label>
+                <select name="uf" id="uf" class="uf">
+                <option value="SP">São Paulo (SP)</option>
+                <option value="AC">Acre (AC)</option>
+                <option value="AL">Alagoas (AL)</option>
+                <option value="AP">Amapá (AP)</option>
+                <option value="AM">Amazonas (AM)</option>
+                <option value="BA">Bahia (BA)</option>
+                <option value="CE">Ceará (CE)</option>
+                <option value="DF">Distrito Federal (DF)</option>
+                <option value="ES">Espírito Santo (ES)</option>
+                <option value="GO">Goiás (GO)</option>
+                <option value="MA">Maranhão (MA)</option>
+                <option value="MT">Mato Grosso (MT)</option>
+                <option value="MS">Mato Grosso do Sul (MS)</option>
+                <option value="MG">Minas Gerais (MG)</option>
+                <option value="PA">Pará (PA)</option>
+                <option value="PB">Paraíba (PB)</option>
+                <option value="PR">Paraná (PR)</option>
+                <option value="PE">Pernambuco (PE)</option>
+                <option value="PI">Piauí (PI)</option>
+                <option value="RJ">Rio de Janeiro (RJ)</option>
+                <option value="RN">Rio Grande do Norte (RN)</option>
+                <option value="RS">Rio Grande do Sul (RS)</option>
+                <option value="RO">Rondônia (RO)</option>
+                <option value="RR">Roraima (RR)</option>
+                <option value="SC">Santa Catarina (SC)</option>
+                <option value="SE">Sergipe (SE)</option>
+                <option value="TO">Tocantins (TO)</option>
+                </select>
+            </div>
+            <div class="end3">
+                <label for="numero">Número:</label>
+                <input type="text" id="numero" name="numero" />
+                <label for="complemento">Complemento:</label>
+                <input type="text" id="complemento" name="complemento" />
+            </div>
+
+           
+        </div>
+
+        <!--DADOS BANCARIOS-->
+
+        <h3>DADOS BANCÁRIOS</h3>
+        <div class="bancarios">
+
+        <label for="banco">Banco:</label>
+        <input type="text" name="banco" id="banco" maxlength="6">
+        <label for="agencia">Agência:</label>
+        <input type="text" name="agencia" id="agencia" maxlength="10">
+        <label for="cic">CIC:</label>
+        <input type="text" name="cic" id="cic">
+        </div>
+
+        <h3>MEIOS DE PAGAMENTO:</h3>
+
+        <div class="pagamento">
+
+            <div class="radio-group">
+                <input type="radio" name="pag" id="pix">
+                <label for="pix">PIX</label>
+                <input type="radio" name="pag" id="boleto">
+                <label for="boleto">Boleto</label>
+                <input type="radio" name="pag" id="ted">
+                 <label for="ted">TED</label>
+            </div>
+
+        </div>
+
+        <div id="chavepix">
+
+            <div class="chavepixx">
+                <label for="chave">Chave PIX:</label>
+                <input type="text" name="chave" id="chave">
+            </div>
+
+        </div>
+
+         <button type="submit" onclick="cadastrar(event)">Cadastrar</button>
+        </form>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="cadfornecedor.js"></script>
+</body>
+</html>

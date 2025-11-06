@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Cadastro de Paciente</title>
+  <link rel="stylesheet" href="cadpacientes.css" />
+  <link rel="shortcut icon" href="certo.png" type="image/x-icon" />
+</head>
+<body>
+  <div class="container">
+    <h1>Cadastro de Paciente</h1>
+    <form class="formulario">
+      <h3>DADOS</h3>
+      <div class="dados">
+        <div class="dados1">
+          <label for="nomepac">Nome do Paciente:</label>
+          <input type="text" id="nomepac" name="nomepac" />
+          <label for="nomeresp">Nome do Responsável:</label>
+          <input type="text" id="nomeresp" name="nomeresp" />
+        </div>
+
+        <div class="dados2">
+          <label for="rgpac">RG do Paciente:</label>
+          <input type="text" id="rgpac" name="rgpac" maxlength="12" />
+          <label for="rgresp">RG do Responsável:</label>
+          <input type="text" id="rgresp" name="rgresp" maxlength="12" />
+        </div>
+
+        <div class="dados3">
+          <label for="cpfpac">CPF do Paciente:</label>
+          <input type="text" id="cpfpac" name="cpfpac" maxlength="14" />
+          <label for="cpfresp">CPF do Responsável:</label>
+          <input type="text" id="cpfresp" name="cpfresp" maxlength="14" />
+        </div>
+      </div>
+
+      <h3>CONTATO</h3>
+      <div class="contato">
+        <label for="telefone">Telefone:</label>
+        <input type="tel" id="telefone" name="telefone" />
+      </div>
+
+      <h3>ENDEREÇO</h3>
+      <div class="radio-group" id="areas">
+        <input type="radio" name="area" id="urbana" value="urbana" />
+        <label for="urbana">Urbano</label>
+        <input type="radio" name="area" id="rural" value="rural" />
+        <label for="rural">Rural</label>
+      </div>
+
+      <!-- ENDEREÇO URBANO -->
+      <div id="form-urbano">
+        <div class="end">
+          <div class="end1">
+            <label for="endereco">Logradouro:</label>
+            <input type="text" id="endereco" name="endereco" />
+            <label for="numero">Número:</label>
+            <input type="text" id="numero" name="numero" />
+          </div>
+          <div class="end2">
+            <label for="cep">CEP:</label>
+            <input type="text" id="cep" name="cep" />
+            <label for="cidade">Cidade:</label>
+            <input type="text" id="cidade" name="cidade" />
+            <label for="complemento">Complemento:</label>
+            <input type="text" id="complemento" name="complemento" />
+          </div>
+        </div>
+      </div>
+
+      <!-- ENDEREÇO RURAL -->
+      <div id="form-rural">
+        <div class="end3">
+          <label for="municipio">Município:</label>
+          <input type="text" id="municipio" name="municipio" />
+          <label for="ponto">Ponto de Referência:</label>
+          <input type="text" id="ponto" name="ponto" />
+        </div>
+      </div>
+
+       <h3>CILINDRO</h3>
+      <div id="container-cilindros"></div>
+
+      <!-- TEMPLATE OCULTO -->
+      <div id="template-cilindro">
+        <div class="grupo-cilindro">
+          <button type="button" class="remover-cilindro">
+            <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-status/128/user-trash-icon.png" id="lixo" />
+          </button>
+          <hr />
+
+          <div class="selectam">
+            <label for="gas">Gás:</label>
+            <input type="text" id="gas" name="gas" value="Oxigênio Medicinal" readonly />
+            <label for="tamanho" class="tamanho">Tamanho:</label>
+            <select id="tamanho" name="tamanho" class="choices-select">
+              <option value="" disabled selected hidden></option>
+              <option value="med">White Med</option>
+              <option value="1L">01L (Aluminio)</option>
+              <option value="3L">03L (Aço)</option>
+              <option value="03l">03L (Aluminio)</option>
+              <option value="5L">05L (Aluminio)</option>
+              <option value="7L">07L</option>
+              <option value="10L">10L</option>
+              <option value="16L">16L</option>
+              <option value="20L">20L</option>
+              <option value="21L">21L</option>
+              <option value="30L">30L</option>
+              <option value="40L">40L</option>
+              <option value="50L">50L</option>
+            </select>
+          </div>
+
+          <div class="ops">
+            <label for="preco">Preço do Gás:</label>
+            <input type="text" id="preco" name="precogas" class="preco-gas" />
+            <div class="radio-group">
+              <label for="qnt">Quantidade:</label>
+              <input type="text" id="qnt" name="qnt" class="qnt" />
+              <label for="aplic"><input type="radio" name="cilindro-temporario" value="aplicado" id="aplic" /> Cilindro Aplicado</label>
+              <label for="prop"><input type="radio" name="cilindro-temporario" value="proprio" id="prop" /> Cilindro Próprio</label>
+            </div>
+          </div>
+
+          <div class="valv">
+             <label for="concentrador">Concentrador:</label>
+            <select id="concentrador" name="concentrador" class="choices-select">
+              <option value="" disabled selected hidden></option>
+              <option value="lumiar110">Mercury Lumiar 110V</option>
+              <option value="everflo110">Everflo Philips 110V</option>
+              <option value="aircep110">Aircep 110V</option>
+              <option value="lumiar220">Mercury Lumiar 220V</option>
+              <option value="everflo220">Everflo Philips 220V</option>
+              <option value="aircep220">Aircep 220V</option>
+              <option value="nenhum">Nenhum</option>
+            </select>
+
+            <div id="iniaplicado" class="condicional" data-show-if="aplicado">
+
+              <label for="inicioaplicacao">Inicio da Aplicação:</label>
+              <input type="date" id="aplicacao" name="aplicacao" class="aplicacao">
+
+            </div>
+           
+
+          </div>
+
+
+          <div class="loc">
+            <label for="ciloc">Cilindro de Locação:</label>
+            <div class="radio-group">
+              <label for="locsim"><input type="radio" name="locacao-temporario" value="sim" onchange="mostrarDinamico(this)" /> Sim</label>
+              <label><input type="radio" name="locacao-temporario" value="nao" onchange="mostrarDinamico(this)" /> Não</label>
+            </div>
+          </div>
+
+          <div class="posloc">
+         <h3>LOCAÇÃO:</h3>
+          <label>Preço da Locação:</label>
+          <input type="text" class="preco-locacao" id="simloc" name="simloc" />
+          <div class="radio-group">
+            <label for="periloc">Locação é de periodo:</label>
+            <div class="detint">
+              <label for="det"><input type="radio" name="detint-temporario" value="determinado" onchange="detlocDinamico(this)" /> Determinado</label>
+              <label for="int"><input type="radio" name="detint-temporario" value="indeterminado" onchange="detlocDinamico(this)" /> Indeterminado</label>
+            </div>
+        </div>
+      </div>
+
+      <!-- Se for determinado -->
+      <div class="perloc">
+        <div class="per"><label for="periodo">Período da Locação:</label> </div>
+           <div class="inifim">
+                <label for="inicio">De:</label>
+                <input type="date" id="inicio_determinado" name="inicio_determinado" />
+        
+                  <label for="fim">Até:</label>
+                  <input type="date" id="fim_determinado" name="fim_determinado" />
+                </div>
+             
+      </div>
+       <!-- Se for indeterminado -->
+         <div class="intloc">
+        <div class="peri"><label for="periodo">Período da Locação:</label> </div>
+           <div class="fini">
+                <label for="ini">Início da Locação:</label>
+                <input type="date" id="inicio_indeterminado" name="inicio_indeterminado" />
+                </div>   
+      </div>
+
+      
+        </div>
+        <div class="acessorios">
+  <h3>ACESSÓRIOS</h3>
+  
+    <div class="suportes">
+      <label for="suporte">
+        <div class="sup">Suporte Cilindro:</div>
+      </label>
+      <div class="radio-group">
+        <input type="radio" name="suporte" id="supsim" >
+        <label for="supsim">Sim</label>
+        <input type="radio" name="suporte" id="supnao">
+        <label for="supnao">Não</label>
+      </div>
+    </div>
+
+
+
+    <div class="valvulas">
+      <label for="valvula">Válvula Reguladora:</label>
+      <div class="radio-group">
+        <input type="radio" name="valvula" id="valvsim" value="valsim">
+        <label for="valvsim">Sim</label>
+        <input type="radio" name="valvula" id="valvnao" value="valnao">
+        <label for="valvnao">Não</label>
+      </div>
+       <div class="valvprop" data-show-if="valsim">
+       
+            <div class="radio-group">
+              <input type="radio" name="valvcioxpropria" id="ciox">
+              <label for="CIOX">CIOX</label>
+              <input type="radio" name="valvcioxpropria" id="propria">
+              <label for="Prop">Própria</label>
+            </div>
+             </div>
+    </div>
+
+    <div class="transformadores">
+      <label for="transformador">
+        Transformador de Energia:
+      </label>
+      <div class="radio-group">
+        <input type="radio" name="transformador" id="energsim" value="transsim">
+        <label for="energsim">Sim</label>
+        <input type="radio" name="transformador" id="energnao" value="transnao">
+        <label for="energnao">Não</label>
+      </div>
+
+      <div class="transcioxprop"  data-show-if="transsim" >
+        <div class="radio-group">
+              
+              <input type="radio" name="transcioxpropria" id="ciox">
+              <label for="CIOX">CIOX</label>
+              <input type="radio" name="transcioxpropria" id="propria">
+              <label for="Prop">Próprio</label>
+            </div>
+
+
+      </div>
+
+     
+
+    </div>
+</div>
+
+      </div>
+
+      <button type="button" onclick="adicionarCilindro()">Adicionar Cilindro</button>
+      <button type="submit" onclick="cadastrar(event)">Cadastrar</button>
+    </form>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="cadpacientes.js"></script>
+</body>
+</html>
