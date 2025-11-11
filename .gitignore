@@ -2,10 +2,6 @@
 node_modules/
 dist/
 build/
-migrate.js
-server.js
-package-lock.json
-package.json
 
 # sistema
 .DS_Store
