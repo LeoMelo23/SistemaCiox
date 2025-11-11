@@ -435,3 +435,67 @@ label[for='preco']{
   grid-column: 2;
   grid-template-columns: auto 400px auto 135px;
 }
+
+/* ===================== */
+/* 🔹 RESPONSIVIDADE 🔹 */
+/* ===================== */
+@media (max-width: 768px) {
+
+  .container {
+    padding: 20px;
+    width: 100%;
+    max-width: 95%;
+  }
+
+  /* Deixa os grids em uma única coluna */
+  .dados1, .dados2, .dados3,
+  .end1, .end2, .end3,
+  .selectam, .ops, .valv,
+  .inifim, .fini,
+  .suportes, .valvulas, .transformadores {
+    grid-template-columns: 1fr;
+  }
+
+  /* Ajusta inputs e selects para ocuparem 100% */
+  input, select {
+    width: 100%;
+  }
+
+  /* Remove margens horizontais */
+  label {
+    margin-top: 10px;
+  }
+
+  /* Botões empilhados com espaçamento */
+  button {
+    width: 100%;
+    margin-top: 15px;
+  }
+
+  /* Ajusta grupos de rádio */
+  .radio-group {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  /* Centraliza título e campos */
+  h1 {
+    font-size: 22px;
+  }
+
+  /* Diminui padding nos títulos de seção */
+  h3 {
+    margin-top: 20px;
+  }
+
+  /* Lixo (botão remover cilindro) */
+  .remover-cilindro {
+    top: 5px;
+    right: 5px;
+  }
+
+  #lixo {
+    width: 20px;
+    height: 20px;
+  }
+}

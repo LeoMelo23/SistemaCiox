@@ -46,3 +46,8 @@ async function carregarTotalClientes() {
 
 // Carregar assim que a página abrir
 document.addEventListener("DOMContentLoaded", carregarTotalClientes);
+
+
+  if (sessionStorage.getItem("acessoCiox") !== "autorizado") {
+    window.location.href = "acesso.html";
+  }

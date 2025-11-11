@@ -281,11 +281,11 @@ async function verDetalhes(id) {
           ${ci.locacao === 'Sim' ? `
             <div><b>Preço Locação:</b> <span>${formatBRL(ci.preco_locacao)}</span></div>
             <div><b>Período:</b> <span>${ci.periodo || '-'}</span></div>
-            <div><b>Início da Locação:</b> <span>${ci.inicio || '-'}</span></div>
-            <div><b>Fim da Locação:</b> <span>${ci.fim || '-'}</span></div>
+            <div><b>Início da Locação:</b> <span>${formatarDataSimples(ci.inicio) || '-'}</span></div>
+            <div><b>Fim da Locação:</b> <span>${formatarDataSimples(ci.fim) || '-'}</span></div>
           ` : ''}
           <div><b>Cilindro:</b> <span>${ci.proprietario || '-'}</span></div>
-          ${ci.aplicado ? `<div><b>Início da Aplicação:</b><span>${ci.aplicado}</span></div>` : ''}
+          ${ci.aplicado ? `<div><b>Início da Aplicação:</b><span>${formatarDataSimples(ci.aplicado)}</span></div>` : ''}
         </div>
       `).join('')
       : `<p class="muted">Nenhum cilindro cadastrado</p>`;
@@ -340,12 +340,22 @@ function formatBRL(v) {
 }
 
 function formatarData(dataISO) {
-  if (!dataISO) return "";
+  if (!dataISO) return "-";
 
-  // cria a data em UTC
+  // Se já estiver no formato brasileiro, retorna como está
+  if (typeof dataISO === 'string' && dataISO.includes('/')) {
+    return dataISO;
+  }
+
+  // Cria a data em UTC
   const data = new Date(dataISO + "Z"); // força interpretar como UTC
 
-  // ajusta para fuso horário de Brasília (UTC-3)
+  // Verifica se é uma data válida
+  if (isNaN(data.getTime())) {
+    return dataISO; // Retorna original se não for data válida
+  }
+
+  // Ajusta para fuso horário de Brasília (UTC-3)
   data.setHours(data.getHours());
 
   const dia = String(data.getDate()).padStart(2, "0");
@@ -356,4 +366,26 @@ function formatarData(dataISO) {
   const segundos = String(data.getSeconds()).padStart(2, "0");
 
   return `${dia}/${mes}/${ano} ${horas}:${minutos}:${segundos}`;
+}
+
+function formatarDataSimples(dataISO) {
+  if (!dataISO || dataISO === '-') return '-';
+
+  // Se já estiver no formato brasileiro, retorna como está
+  if (typeof dataISO === 'string' && dataISO.includes('/')) {
+    return dataISO;
+  }
+
+  try {
+    const data = new Date(dataISO + "T00:00:00Z"); // Força UTC
+    if (isNaN(data.getTime())) return dataISO;
+
+    const dia = String(data.getDate()).padStart(2, "0");
+    const mes = String(data.getMonth() + 1).padStart(2, "0");
+    const ano = data.getFullYear();
+
+    return `${dia}/${mes}/${ano}`;
+  } catch (e) {
+    return dataISO;
+  }
 }

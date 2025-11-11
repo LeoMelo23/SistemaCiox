@@ -144,7 +144,7 @@ button {
 .cil-card b { color:#08451C; }
 .muted { color: #777; margin: 0 0 6px; }
 
-/* Botão fechar */
+
 .swal-detalhes__btn {
   background: #08451C !important;
   border-radius: 8px !important;
@@ -178,4 +178,79 @@ h3{
   color: #08451C;
   font-size: 20px;
   font-weight: bold;
+}
+
+.filtros-container {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  gap: 20px;
+  margin-bottom: 20px;
+  flex-wrap: wrap;
+}
+
+#filtro-avancado {
+  flex: 1;
+  min-width: 300px;
+}
+
+.btn-cadastrar {
+  background-color: #08451C;
+  color: white;
+  border: none;
+  padding: 12px 25px;
+  border-radius: 3px;
+  font-size: 16px;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background 0.3s, transform 0.2s;
+  white-space: nowrap;
+  font-weight: bold;
+  height: fit-content;
+  margin-top: 25px;
+}
+
+.btn-cadastrar:hover {
+   background-color: #0a5a24;
+  transform: scale(1.05);
+}
+
+
+#form-filtro {
+  display: flex;
+  gap: 10px;
+  flex-wrap: wrap;
+  align-items: center;
+}
+
+
+/* RESPONSIVIDADE */
+@media (max-width: 1024px) {
+  .filtros-container {
+    flex-direction: column;
+    gap: 15px;
+  }
+  
+  .btn-cadastrar{
+    align-self: flex-end;
+    margin-top: 0;
+  }
+}
+
+@media (max-width: 768px) {
+  #form-filtro {
+    flex-direction: column;
+    align-items: stretch;
+  }
+  
+  #form-filtro select, 
+  #form-filtro button {
+    width: 100%;
+  }
+  
+  .btn-cadastrar {
+    width: 100%;
+    max-width: 200px;
+    align-self: center;
+  }
 }

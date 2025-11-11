@@ -167,14 +167,25 @@ function configurarCondicionais(grupo) {
 
   function atualizar() {
     const val = $('input[type="radio"][name^="cilindro_"]:checked', grupo)?.value;
+
     condicionais.forEach(div => {
-      div.style.display = (div.dataset.showIf === val) ? 'block' : 'none';
+      const deveMostrar = div.dataset.showIf === val;
+      div.style.display = deveMostrar ? 'block' : 'none';
+
+      // 🔹 Se o campo for de "Aplicado" e estiver sendo escondido, limpa os valores
+      if (!deveMostrar && div.dataset.showIf === 'Aplicado') {
+        const inputData = $('input[type="date"]', div);
+        if (inputData) {
+          inputData.value = ''; // limpa a data
+        }
+      }
     });
   }
 
   radios.forEach(r => r.addEventListener('change', atualizar));
   atualizar();
 }
+
 
 // ==============================
 // Locação: mostrar blocos
@@ -418,7 +429,7 @@ function coletarCilindros() {
       inicio: null,
       fim: null,
       aplicado: $('.aplicacao', grupo)?.value || null,
-      proprietario: grupo.querySelector('input[type="radio"][name^="cilindro_"]:checked')?.value || null
+      proprietario: grupo.querySelector('input[name^="cilindro_"]:checked')?.value || null
 
       
     };

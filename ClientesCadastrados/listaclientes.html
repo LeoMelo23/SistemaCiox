@@ -14,45 +14,51 @@
   placeholder="Buscar (ID, Nome, Segmento, CPF...)" 
 >
 
-<div id="filtro-avancado">
-  <h3>Filtro Avançado</h3>
-  <form id="form-filtro">
-    <select id="filtro-gas">
-       <option value="">Todos os gases</option>
-      <option value="OM">Oxigênio Medicinal</option>
-              <option value="AC">Ar Comprimido</option>
-              <option value="ON">Óxido Nitroso</option>
-              <option value="OI">Oxigênio Industrial</option>
-              <option value="Arg">Argônio</option>
-              <option value="Hel">Gás Hélio</option>
-              <option value="Ace">Acetileno</option>
-              <option value="GS">Mistura/Gás de Solda</option>
-              <option value="Nit">Nitrogênio</option>
-              <option value="CO2">CO2</option>
-              <option value="conserv">Conservare</option>
-              <option value="etil">Etil</option>
-              <option value="usp">CO2 USP</option>
-    </select>
-
-      <select id="filtro-tamanho" disabled>
-    <option value="">Todos</option>
-  </select>
-
-    <select id="filtro-proprietario">
+<div class="filtros-container">
+  <div id="filtro-avancado">
+    <h3>Filtro Avançado</h3>
+    <form id="form-filtro">
+      <select id="filtro-gas">
+         <option value="">Todos os gases</option>
+        <option value="OM">Oxigênio Medicinal</option>
+                <option value="AC">Ar Comprimido</option>
+                <option value="ON">Óxido Nitroso</option>
+                <option value="OI">Oxigênio Industrial</option>
+                <option value="Arg">Argônio</option>
+                <option value="Hel">Gás Hélio</option>
+                <option value="Ace">Acetileno</option>
+                <option value="GS">Mistura/Gás de Solda</option>
+                <option value="Nit">Nitrogênio</option>
+                <option value="CO2">CO2</option>
+                <option value="conserv">Conservare</option>
+                <option value="etil">Etil</option>
+                <option value="usp">CO2 USP</option>
+      </select>
+  
+        <select id="filtro-tamanho" disabled>
       <option value="">Todos</option>
-      <option value="Aplicado">Aplicado</option>
-      <option value="Próprio">Próprio</option>
     </select>
-
-    <select id="filtro-locacao">
-      <option value="">Todos</option>
-      <option value="Sim">Locação</option>
-      <option value="Não">Não</option>
-    </select>
-
-    <button type="submit">Filtrar</button>
-    <button type="button" id="reset-filtro">Limpar</button>
-  </form>
+  
+      <select id="filtro-proprietario">
+        <option value="">Todos</option>
+        <option value="Aplicado">Aplicado</option>
+        <option value="Próprio">Próprio</option>
+      </select>
+  
+      <select id="filtro-locacao">
+        <option value="">Todos</option>
+        <option value="Sim">Locação</option>
+        <option value="Não">Não</option>
+      </select>
+  
+      <button type="submit">Filtrar</button>
+      <button type="button" id="reset-filtro">Limpar</button>
+    </form>
+  </div>
+  
+  <button class="btn-cadastrar"  onclick="window.open('../CadastroClientes/cadclientes.html', '_blank')">
+        Cadastrar Cliente
+      </button>
 </div>
 
 
@@ -74,6 +80,14 @@
     <tbody></tbody>
     
   </table>
+
+  
+  
+
+   
+  
+
+ 
 
   
 

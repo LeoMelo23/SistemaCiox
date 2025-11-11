@@ -337,3 +337,109 @@ h3 {
 /* */
 
 
+
+/* ======== RESPONSIVIDADE GERAL ======== */
+@media (max-width: 1024px) {
+  /* Sidebar recolhe e vai pro topo */
+  .container {
+    flex-direction: column;
+  }
+
+  .sidebar {
+    width: 100%;
+    flex-direction: row;
+    align-items: center;
+    justify-content: flex-start;
+    overflow-x: auto;
+    white-space: nowrap;
+  }
+
+  .sidebar-menu {
+    flex-direction: row;
+    justify-content: space-between;
+    padding: 5px;
+    height: auto;
+  }
+
+  .sidebar-menu ul {
+    display: flex;
+    flex-direction: row;
+    flex-wrap: nowrap;
+    width: max-content;
+    gap: 8px;
+    margin: 0;
+  }
+
+  .sidebar-menu li {
+    padding: 8px 15px;
+    font-size: 14px;
+    white-space: nowrap;
+  }
+
+  .logo-container {
+    width: auto;
+    padding: 10px;
+  }
+
+  .logo-img {
+    width: 130px;
+  }
+
+  /* KPIs empilham */
+  .top-bar {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 10px;
+  }
+
+  .kpi {
+    justify-content: center;
+    font-size: 16px;
+  }
+
+  /* Catálogo ajusta */
+  .catalog {
+    padding: 10px;
+  }
+
+  .catalog-grid {
+    grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+  }
+
+  .item img {
+    width: 100%;
+    max-width: 160px;
+    height: auto;
+  }
+
+  .prev, .next {
+    width: 30px;
+    height: 50px;
+    font-size: 18px;
+  }
+
+  /* Texto da empresa */
+  h3 {
+    text-align: center;
+    font-size: 16px;
+  }
+}
+
+@media (max-width: 600px) {
+  .kpi {
+    font-size: 14px;
+  }
+
+  .catalog h2 {
+    font-size: 22px;
+  }
+
+  .sidebar-menu li {
+    padding: 6px 10px;
+    font-size: 12px;
+  }
+
+  .item {
+    min-height: 180px;
+  }
+}

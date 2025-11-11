@@ -369,3 +369,73 @@ label[for='periloc']{
 label[for='indet']{
   margin-top: 15px;
 }
+
+/* ===========================
+   RESPONSIVIDADE
+   =========================== */
+@media (max-width: 900px) {
+  .container {
+    width: 95%;
+    padding: 15px;
+  }
+
+  h1 {
+    font-size: 1.5rem;
+  }
+
+  .dados1, .dados2, .end1, .end2, .end3, .contato,
+  .selectam, .ops, .loc, .inifim, .fini, .detint {
+    grid-template-columns: 1fr; /* empilha os elementos */
+    gap: 10px;
+  }
+
+  label {
+    margin-top: 5px;
+  }
+
+  input, select {
+    width: 100%;
+  }
+
+  .radio-group {
+    flex-wrap: wrap;
+    gap: 10px;
+  }
+
+  button {
+    width: 100%;
+    font-size: 15px;
+  }
+
+  .remover-cilindro {
+    position: static;
+    margin-left: auto;
+    display: block;
+  }
+}
+
+@media (max-width: 600px) {
+  h1 {
+    font-size: 1.3rem;
+  }
+
+  .container {
+    padding: 10px;
+  }
+
+  label {
+    font-size: 14px;
+  }
+
+  input, select {
+    font-size: 14px;
+    padding: 8px;
+  }
+
+  button {
+    font-size: 14px;
+    padding: 10px;
+  }
+}
+
+
