@@ -281,5 +281,6 @@ const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API rodando em http://localhost:${PORT}`));
 
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "public", "acesso.html"));
+res.sendFile(path.join(__dirname, "..", "public", "acesso.html"));
+
 });
