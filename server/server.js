@@ -1,4 +1,4 @@
-// CommonJS para evitar mexer no "type" do package.json"
+// ====== CONFIGURAÇÕES INICIAIS ======
 const express = require("express");
 const cors = require("cors");
 const Database = require("better-sqlite3");
@@ -6,24 +6,30 @@ const path = require("path");
 const fs = require("fs");
 
 const app = express();
+const PORT = process.env.PORT || 10000;
+
 app.use(cors());
 app.use(express.json());
 
-// cria pasta /server/data e o arquivo do banco
-const dataDir = path.join(__dirname, "data");
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-const db = new Database(path.join(dataDir, "sistemaciox.db"));
-db.pragma("foreign_keys = ON");
+// ====== ARQUIVOS ESTÁTICOS ======
+// Serve os arquivos HTML, CSS, JS e imagens da pasta public
+app.use(express.static(path.join(__dirname, "../public")));
 
+// ====== BANCO DE DADOS (em /tmp no Render) ======
+const dbPath = process.env.NODE_ENV === "production"
+  ? "/tmp/sistemaciox.db"
+  : path.join(__dirname, "data", "sistemaciox.db");
 
-// Função para normalizar texto removendo acentos
-function normalizeText(text) {
-  return text
-    ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
-    : "";
+if (process.env.NODE_ENV !== "production") {
+  // Garante que a pasta /data existe localmente
+  const dataDir = path.join(__dirname, "data");
+  if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 }
 
-// Tabelas
+const db = new Database(dbPath);
+db.pragma("foreign_keys = ON");
+
+// ====== CRIAÇÃO DAS TABELAS ======
 db.exec(`
 CREATE TABLE IF NOT EXISTS clientes (
   id INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -56,11 +62,17 @@ CREATE TABLE IF NOT EXISTS cilindros (
   inicio TEXT,
   fim TEXT,
   aplicado TEXT,
+  proprietario TEXT,
   FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
 );
 `);
 
-// -------- ROTAS --------
+// ====== FUNÇÃO DE NORMALIZAÇÃO ======
+function normalizeText(text) {
+  return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+}
+
+// ====== ROTAS ======
 
 // Cadastrar cliente
 app.post("/api/clientes", (req, res) => {
@@ -73,10 +85,8 @@ app.post("/api/clientes", (req, res) => {
 
     if (!nome) return res.status(400).json({ error: "Nome é obrigatório" });
 
-    // 🔎 Normaliza documento (remove ., -, /)
     const docLimpo = documento ? documento.replace(/[^\d]/g, "") : null;
 
-    // 🛑 Verifica se já existe cliente com mesmo CPF/CNPJ
     if (docLimpo) {
       const clienteExistente = db
         .prepare(`
@@ -86,7 +96,6 @@ app.post("/api/clientes", (req, res) => {
         .get(docLimpo);
 
       if (clienteExistente) {
-        // ⚠️ Retorna aviso, não erro genérico
         return res.status(409).json({
           aviso: true,
           message: `O cliente "${clienteExistente.nome}" já está cadastrado com este CPF/CNPJ.`
@@ -94,7 +103,6 @@ app.post("/api/clientes", (req, res) => {
       }
     }
 
-    // 🟢 Insere cliente novo
     const insertCliente = db.prepare(`
       INSERT INTO clientes
       (nome, profissao, documento, telefone, email, area, endereco, numero, cep, cidade, complemento, municipio, ponto)
@@ -109,12 +117,11 @@ app.post("/api/clientes", (req, res) => {
 
     const clienteId = info.lastInsertRowid;
 
-    // 🧱 Insere cilindros (igual antes)
     if (Array.isArray(cilindros) && cilindros.length) {
       const insertCil = db.prepare(`
         INSERT INTO cilindros
         (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado, proprietario)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
       const insertMany = db.transaction((arr) => {
         for (const c of arr) {
@@ -144,27 +151,21 @@ app.post("/api/clientes", (req, res) => {
   }
 });
 
-
-// Listar clientes (para a tela de Clientes Cadastrados) - inclui cilindros
+// Listar clientes
 app.get("/api/clientes", (req, res) => {
   try {
     const rows = db.prepare(`SELECT * FROM clientes ORDER BY datetime(criado_em) DESC`).all();
-
-    // Pega cilindros por cliente (uma query por cliente)
-    // Se forem muitos clientes, poderia ser otimizado com JOIN, mas isso já resolve o problema de imediato.
     const stmtCil = db.prepare(`SELECT * FROM cilindros WHERE cliente_id = ?`);
     const result = rows.map(c => {
       const cilindros = stmtCil.all(c.id) || [];
       return { ...c, cilindros };
     });
-
     res.json(result);
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Erro ao buscar clientes" });
   }
 });
-
 
 // Contar clientes
 app.get("/api/clientes/count", (req, res) => {
@@ -196,12 +197,8 @@ app.delete("/api/clientes/:id", (req, res) => {
     const id = Number(req.params.id);
     db.prepare("DELETE FROM cilindros WHERE cliente_id = ?").run(id);
     const info = db.prepare("DELETE FROM clientes WHERE id = ?").run(id);
-
-    if (info.changes > 0) {
-      res.json({ ok: true, message: "Cliente excluído com sucesso" });
-    } else {
-      res.status(404).json({ ok: false, error: "Cliente não encontrado" });
-    }
+    if (info.changes > 0) res.json({ ok: true, message: "Cliente excluído com sucesso" });
+    else res.status(404).json({ ok: false, error: "Cliente não encontrado" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ ok: false, error: "Erro ao excluir cliente" });
@@ -235,17 +232,15 @@ app.put("/api/clientes/:id", (req, res) => {
       id
     );
 
-    if (info.changes === 0) {
-      return res.status(404).json({ error: "Cliente não encontrado" });
-    }
+    if (info.changes === 0) return res.status(404).json({ error: "Cliente não encontrado" });
 
     db.prepare("DELETE FROM cilindros WHERE cliente_id = ?").run(id);
 
     if (Array.isArray(cilindros) && cilindros.length) {
       const insertCil = db.prepare(`
         INSERT INTO cilindros
-        (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado,proprietario)
-        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+        (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado, proprietario)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
       `);
 
       const insertMany = db.transaction((arr) => {
@@ -270,28 +265,16 @@ app.put("/api/clientes/:id", (req, res) => {
     }
 
     res.json({ ok: true, message: "Cliente atualizado com sucesso" });
-
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Erro ao atualizar cliente" });
   }
 });
 
-app.use(express.static(path.join(__dirname, "../public")));
-
-
-// Servir arquivos estáticos (frontend)
-app.use(express.static(path.join(__dirname, "..")));
-
-// Rota principal → acesso.html
-app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "acesso.html"));
+// ====== ROTA PADRÃO ======
+app.get("*", (req, res) => {
+  res.sendFile(path.join(__dirname, "../public/acesso.html"));
 });
 
-// Rota /site → site.html
-app.get("/site", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "site.html"));
-});
-
-const PORT = process.env.PORT || 3000;
+// ====== INICIALIZAÇÃO ======
 app.listen(PORT, () => console.log(`✅ Servidor rodando na porta ${PORT}`));
