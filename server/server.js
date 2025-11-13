@@ -5,25 +5,18 @@ const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
-
-const PORT = process.env.PORT || 3000; // ✅ 1. Adicionar PORT
-
-
 const app = express();
+const PORT = process.env.PORT || 3000;
+
 app.use(cors());
 app.use(express.json());
 
-// cria pasta /server/data e o arquivo do banco
-const dataDir = path.join(__dirname, "data");
-if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
-const db = new Database(path.join(dataDir, "sistemaciox.db"));
-db.pragma("foreign_keys = ON");
-
+// ========== CONFIGURAÇÃO DO BANCO ==========
+let db; // ✅ Mude para 'let' em vez de 'const'
 let dbPath;
 
-
 if (process.env.NODE_ENV === 'production') {
-  // 🎯 NO RENDER: Usa /tmp (única pasta persistente)
+  // 🎯 NO RENDER: Usa /tmp
   dbPath = "/tmp/sistemaciox.db";
   console.log('🔧 Modo: Production (Render) - Banco em /tmp');
 } else {
@@ -34,12 +27,11 @@ if (process.env.NODE_ENV === 'production') {
   console.log('🔧 Modo: Development (Local) - Banco em /data');
 }
 
-db = new Database(dbPath);
+db = new Database(dbPath); // ✅ Agora pode reatribuir
 db.pragma("foreign_keys = ON");
 
-// ========== ✅ 3. ADICIONAR SERVIÇO DE ARQUIVOS ESTÁTICOS ==========
+// ========== SERVIÇO DE ARQUIVOS ESTÁTICOS ==========
 app.use(express.static(path.join(__dirname, "..")));
-
 
 // Função para normalizar texto removendo acentos
 function normalizeText(text) {
@@ -302,11 +294,12 @@ app.put("/api/clientes/:id", (req, res) => {
   }
 });
 
+// ========== ROTA PARA PÁGINA INICIAL ==========
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "acesso.html"));
 });
 
-// ========== ✅ 5. INICIAR SERVIDOR ==========
+// ========== INICIAR SERVIDOR ==========
 app.listen(PORT, () => {
   console.log(`✅ Servidor rodando na porta ${PORT}`);
   console.log(`🌐 Modo: ${process.env.NODE_ENV || 'development'}`);
