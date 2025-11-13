@@ -277,6 +277,9 @@ app.put("/api/clientes/:id", (req, res) => {
   }
 });
 
+app.use(express.static(path.join(__dirname, "../public")));
+
+
 // Servir arquivos estáticos (frontend)
 app.use(express.static(path.join(__dirname, "..")));
 
