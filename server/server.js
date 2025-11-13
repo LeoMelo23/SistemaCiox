@@ -1,135 +1,94 @@
-// ====== CONFIGURAÇÕES INICIAIS ======
+// CommonJS para evitar mexer no "type" do package.json"
 const express = require("express");
 const cors = require("cors");
+const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
 
-const app = express();
-const PORT = process.env.PORT || 10000;
 
+const PORT = process.env.PORT || 3000; // ✅ 1. Adicionar PORT
+
+
+const app = express();
 app.use(cors());
 app.use(express.json());
 
-// ====== BANCO DE DADOS - SQLite com sqlite3 (nativo) ======
-const sqlite3 = require('sqlite3').verbose();
+// cria pasta /server/data e o arquivo do banco
+const dataDir = path.join(__dirname, "data");
+if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+const db = new Database(path.join(dataDir, "sistemaciox.db"));
+db.pragma("foreign_keys = ON");
 
-// No Render, usa /tmp; localmente usa pasta data
-const dbPath = process.env.NODE_ENV === "production" 
-  ? "/tmp/sistemaciox.db" 
-  : path.join(__dirname, "data", "sistemaciox.db");
+let dbPath;
 
-// Garante que o diretório existe localmente
-if (process.env.NODE_ENV !== "production") {
+
+if (process.env.NODE_ENV === 'production') {
+  // 🎯 NO RENDER: Usa /tmp (única pasta persistente)
+  dbPath = "/tmp/sistemaciox.db";
+  console.log('🔧 Modo: Production (Render) - Banco em /tmp');
+} else {
+  // 🎯 LOCAL: Usa estrutura normal
   const dataDir = path.join(__dirname, "data");
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
+  dbPath = path.join(dataDir, "sistemaciox.db");
+  console.log('🔧 Modo: Development (Local) - Banco em /data');
 }
 
-// Conecta ao banco
-const db = new sqlite3.Database(dbPath, (err) => {
-  if (err) {
-    console.error('Erro ao conectar ao banco:', err);
-  } else {
-    console.log('✅ Conectado ao SQLite:', dbPath);
-  }
-});
+db = new Database(dbPath);
+db.pragma("foreign_keys = ON");
 
-// ====== CRIAÇÃO DAS TABELAS ======
-db.serialize(() => {
-  db.run(`
-    CREATE TABLE IF NOT EXISTS clientes (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      nome TEXT NOT NULL,
-      profissao TEXT,
-      documento TEXT,
-      telefone TEXT,
-      email TEXT,
-      area TEXT,
-      endereco TEXT,
-      numero TEXT,
-      cep TEXT,
-      cidade TEXT,
-      complemento TEXT,
-      municipio TEXT,
-      ponto TEXT,
-      criado_em TEXT DEFAULT (datetime('now'))
-    )
-  `);
+// ========== ✅ 3. ADICIONAR SERVIÇO DE ARQUIVOS ESTÁTICOS ==========
+app.use(express.static(path.join(__dirname, "..")));
 
-  db.run(`
-    CREATE TABLE IF NOT EXISTS cilindros (
-      id INTEGER PRIMARY KEY AUTOINCREMENT,
-      cliente_id INTEGER NOT NULL,
-      gas TEXT,
-      tamanho TEXT,
-      precogas REAL,
-      qnt INTEGER,
-      locacao TEXT,
-      preco_locacao REAL,
-      periodo TEXT,
-      inicio TEXT,
-      fim TEXT,
-      aplicado TEXT,
-      proprietario TEXT,
-      FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
-    )
-  `);
-});
 
-// ====== FUNÇÕES ÚTEIS ======
+// Função para normalizar texto removendo acentos
 function normalizeText(text) {
-  return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
+  return text
+    ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase()
+    : "";
 }
 
-// Promisify para facilitar
-function dbAll(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.all(sql, params, (err, rows) => {
-      if (err) reject(err);
-      else resolve(rows);
-    });
-  });
-}
+// Tabelas
+db.exec(`
+CREATE TABLE IF NOT EXISTS clientes (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  nome TEXT NOT NULL,
+  profissao TEXT,
+  documento TEXT,
+  telefone TEXT,
+  email TEXT,
+  area TEXT,
+  endereco TEXT,
+  numero TEXT,
+  cep TEXT,
+  cidade TEXT,
+  complemento TEXT,
+  municipio TEXT,
+  ponto TEXT,
+  criado_em TEXT DEFAULT (datetime('now'))
+);
 
-function dbRun(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.run(sql, params, function(err) {
-      if (err) reject(err);
-      else resolve({ lastID: this.lastID, changes: this.changes });
-    });
-  });
-}
+CREATE TABLE IF NOT EXISTS cilindros (
+  id INTEGER PRIMARY KEY AUTOINCREMENT,
+  cliente_id INTEGER NOT NULL,
+  gas TEXT,
+  tamanho TEXT,
+  precogas REAL,
+  qnt INTEGER,
+  locacao TEXT,
+  preco_locacao REAL,
+  periodo TEXT,
+  inicio TEXT,
+  fim TEXT,
+  aplicado TEXT,
+  FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
+);
+`);
 
-function dbGet(sql, params = []) {
-  return new Promise((resolve, reject) => {
-    db.get(sql, params, (err, row) => {
-      if (err) reject(err);
-      else resolve(row);
-    });
-  });
-}
-
-// ====== ROTAS API ======
-
-// Listar clientes
-app.get("/api/clientes", async (req, res) => {
-  try {
-    const clientes = await dbAll(`SELECT * FROM clientes ORDER BY datetime(criado_em) DESC`);
-    
-    // Buscar cilindros para cada cliente
-    for (let cliente of clientes) {
-      const cilindros = await dbAll(`SELECT * FROM cilindros WHERE cliente_id = ?`, [cliente.id]);
-      cliente.cilindros = cilindros || [];
-    }
-    
-    res.json(clientes);
-  } catch (e) {
-    console.error(e);
-    res.status(500).json({ error: "Erro ao buscar clientes" });
-  }
-});
+// -------- ROTAS --------
 
 // Cadastrar cliente
-app.post("/api/clientes", async (req, res) => {
+app.post("/api/clientes", (req, res) => {
   try {
     const {
       nome, profissao, documento, telefone, email,
@@ -139,15 +98,20 @@ app.post("/api/clientes", async (req, res) => {
 
     if (!nome) return res.status(400).json({ error: "Nome é obrigatório" });
 
-    // Verificar se documento já existe
-    if (documento) {
-      const docLimpo = documento.replace(/[^\d]/g, "");
-      const clienteExistente = await dbGet(
-        `SELECT id, nome FROM clientes WHERE REPLACE(REPLACE(REPLACE(documento, '.', ''), '-', ''), '/', '') = ?`,
-        [docLimpo]
-      );
+    // 🔎 Normaliza documento (remove ., -, /)
+    const docLimpo = documento ? documento.replace(/[^\d]/g, "") : null;
+
+    // 🛑 Verifica se já existe cliente com mesmo CPF/CNPJ
+    if (docLimpo) {
+      const clienteExistente = db
+        .prepare(`
+          SELECT id, nome FROM clientes 
+          WHERE REPLACE(REPLACE(REPLACE(documento, '.', ''), '-', ''), '/', '') = ?
+        `)
+        .get(docLimpo);
 
       if (clienteExistente) {
+        // ⚠️ Retorna aviso, não erro genérico
         return res.status(409).json({
           aviso: true,
           message: `O cliente "${clienteExistente.nome}" já está cadastrado com este CPF/CNPJ.`
@@ -155,68 +119,96 @@ app.post("/api/clientes", async (req, res) => {
       }
     }
 
-    // Inserir cliente
-    const result = await dbRun(`
-      INSERT INTO clientes 
+    // 🟢 Insere cliente novo
+    const insertCliente = db.prepare(`
+      INSERT INTO clientes
       (nome, profissao, documento, telefone, email, area, endereco, numero, cep, cidade, complemento, municipio, ponto)
       VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-    `, [
+    `);
+
+    const info = insertCliente.run(
       nome || null, profissao || null, documento || null, telefone || null, email || null,
       area || null, endereco || null, numero || null, cep || null, cidade || null,
       complemento || null, municipio || null, ponto || null
-    ]);
+    );
 
-    const clienteId = result.lastID;
+    const clienteId = info.lastInsertRowid;
 
-    // Inserir cilindros
+    // 🧱 Insere cilindros (igual antes)
     if (Array.isArray(cilindros) && cilindros.length) {
-      for (const c of cilindros) {
-        await dbRun(`
-          INSERT INTO cilindros 
-          (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado, proprietario)
-          VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
-        `, [
-          clienteId,
-          c.gas || null,
-          c.tamanho || null,
-          c.precogas ? Number(String(c.precogas).replace(",", ".")) : null,
-          c.qnt ? Number(c.qnt) : null,
-          c.locacao || null,
-          c.preco_locacao ? Number(String(c.preco_locacao).replace(",", ".")) : null,
-          c.periodo || null,
-          c.inicio || null,
-          c.fim || null,
-          c.aplicado || null,
-          c.proprietario || null
-        ]);
-      }
+      const insertCil = db.prepare(`
+        INSERT INTO cilindros
+        (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado, proprietario)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      `);
+      const insertMany = db.transaction((arr) => {
+        for (const c of arr) {
+          insertCil.run(
+            clienteId,
+            c.gas || null,
+            c.tamanho || null,
+            c.precogas ? Number(String(c.precogas).replace(",", ".")) : null,
+            c.qnt ? Number(c.qnt) : null,
+            c.locacao || null,
+            c.preco_locacao ? Number(String(c.preco_locacao).replace(",", ".")) : null,
+            c.periodo || null,
+            c.inicio || null,
+            c.fim || null,
+            c.aplicado || null,
+            c.proprietario || null
+          );
+        }
+      });
+      insertMany(cilindros);
     }
 
-    res.status(201).json({ 
-      ok: true, 
-      id: clienteId, 
-      message: "Cliente cadastrado com sucesso",
-      warning: process.env.NODE_ENV === 'production' ? 
-        "⚠️ MODO RENDER: Dados em /tmp - podem ser perdidos periodicamente" : 
-        undefined
-    });
+    res.status(201).json({ ok: true, id: clienteId, message: "Cliente cadastrado com sucesso" });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Erro ao salvar cliente" });
   }
 });
 
+
+// Listar clientes (para a tela de Clientes Cadastrados) - inclui cilindros
+app.get("/api/clientes", (req, res) => {
+  try {
+    const rows = db.prepare(`SELECT * FROM clientes ORDER BY datetime(criado_em) DESC`).all();
+
+    // Pega cilindros por cliente (uma query por cliente)
+    // Se forem muitos clientes, poderia ser otimizado com JOIN, mas isso já resolve o problema de imediato.
+    const stmtCil = db.prepare(`SELECT * FROM cilindros WHERE cliente_id = ?`);
+    const result = rows.map(c => {
+      const cilindros = stmtCil.all(c.id) || [];
+      return { ...c, cilindros };
+    });
+
+    res.json(result);
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Erro ao buscar clientes" });
+  }
+});
+
+
+// Contar clientes
+app.get("/api/clientes/count", (req, res) => {
+  try {
+    const row = db.prepare("SELECT COUNT(*) as total FROM clientes").get();
+    res.json({ total: row.total });
+  } catch (err) {
+    res.status(500).json({ error: "Erro ao contar clientes" });
+  }
+});
+
 // Detalhar cliente
-app.get("/api/clientes/:id", async (req, res) => {
+app.get("/api/clientes/:id", (req, res) => {
   try {
     const id = Number(req.params.id);
-    const cliente = await dbGet(`SELECT * FROM clientes WHERE id = ?`, [id]);
-    
+    const cliente = db.prepare(`SELECT * FROM clientes WHERE id = ?`).get(id);
     if (!cliente) return res.status(404).json({ error: "Cliente não encontrado" });
-    
-    const cilindros = await dbAll(`SELECT * FROM cilindros WHERE cliente_id = ?`, [id]);
-    
-    res.json({ ...cliente, cilindros });
+    const cil = db.prepare(`SELECT * FROM cilindros WHERE cliente_id = ?`).all(id);
+    res.json({ ...cliente, cilindros: cil });
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Erro ao buscar cliente" });
@@ -224,17 +216,13 @@ app.get("/api/clientes/:id", async (req, res) => {
 });
 
 // Excluir cliente
-app.delete("/api/clientes/:id", async (req, res) => {
+app.delete("/api/clientes/:id", (req, res) => {
   try {
     const id = Number(req.params.id);
-    
-    // Excluir cilindros primeiro
-    await dbRun("DELETE FROM cilindros WHERE cliente_id = ?", [id]);
-    
-    // Excluir cliente
-    const result = await dbRun("DELETE FROM clientes WHERE id = ?", [id]);
-    
-    if (result.changes > 0) {
+    db.prepare("DELETE FROM cilindros WHERE cliente_id = ?").run(id);
+    const info = db.prepare("DELETE FROM clientes WHERE id = ?").run(id);
+
+    if (info.changes > 0) {
       res.json({ ok: true, message: "Cliente excluído com sucesso" });
     } else {
       res.status(404).json({ ok: false, error: "Cliente não encontrado" });
@@ -245,23 +233,80 @@ app.delete("/api/clientes/:id", async (req, res) => {
   }
 });
 
-// ====== ARQUIVOS ESTÁTICOS ======
-app.use(express.static(path.join(__dirname, "..")));
+// Atualizar cliente
+app.put("/api/clientes/:id", (req, res) => {
+  try {
+    const id = Number(req.params.id);
+    const {
+      nome, profissao, documento, telefone, email,
+      area, endereco, numero, cep, cidade, complemento,
+      municipio, ponto, cilindros = []
+    } = req.body;
 
-// ====== ROTAS DAS PÁGINAS ======
+    if (!nome) return res.status(400).json({ error: "Nome é obrigatório" });
+
+    const updateCliente = db.prepare(`
+      UPDATE clientes SET
+        nome = ?, profissao = ?, documento = ?, telefone = ?, email = ?,
+        area = ?, endereco = ?, numero = ?, cep = ?, cidade = ?,
+        complemento = ?, municipio = ?, ponto = ?
+      WHERE id = ?
+    `);
+
+    const info = updateCliente.run(
+      nome || null, profissao || null, documento || null, telefone || null, email || null,
+      area || null, endereco || null, numero || null, cep || null, cidade || null,
+      complemento || null, municipio || null, ponto || null,
+      id
+    );
+
+    if (info.changes === 0) {
+      return res.status(404).json({ error: "Cliente não encontrado" });
+    }
+
+    db.prepare("DELETE FROM cilindros WHERE cliente_id = ?").run(id);
+
+    if (Array.isArray(cilindros) && cilindros.length) {
+      const insertCil = db.prepare(`
+        INSERT INTO cilindros
+        (cliente_id, gas, tamanho, precogas, qnt, locacao, preco_locacao, periodo, inicio, fim, aplicado,proprietario)
+        VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?,?)
+      `);
+
+      const insertMany = db.transaction((arr) => {
+        for (const c of arr) {
+          insertCil.run(
+            id,
+            c.gas || null,
+            c.tamanho || null,
+            c.precogas ? Number(String(c.precogas).replace(",", ".")) : null,
+            c.qnt ? Number(c.qnt) : null,
+            c.locacao || null,
+            c.preco_locacao ? Number(String(c.preco_locacao).replace(",", ".")) : null,
+            c.periodo || null,
+            c.inicio || null,
+            c.fim || null,
+            c.aplicado || null,
+            c.proprietario || null
+          );
+        }
+      });
+      insertMany(cilindros);
+    }
+
+    res.json({ ok: true, message: "Cliente atualizado com sucesso" });
+
+  } catch (e) {
+    console.error(e);
+    res.status(500).json({ error: "Erro ao atualizar cliente" });
+  }
+});
+
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "acesso.html"));
 });
 
-app.get("/cadastro-clientes", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "CadastroClientes", "cadclientes.html"));
-});
-
-app.get("/clientes-cadastrados", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "ClientesCadastrados", "listaclientes.html"));
-});
-
-// ====== INICIALIZAÇÃO ======
+// ========== ✅ 5. INICIAR SERVIDOR ==========
 app.listen(PORT, () => {
   console.log(`✅ Servidor rodando na porta ${PORT}`);
   console.log(`🌐 Modo: ${process.env.NODE_ENV || 'development'}`);
