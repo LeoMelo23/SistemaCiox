@@ -277,20 +277,18 @@ app.put("/api/clientes/:id", (req, res) => {
   }
 });
 
-const PORT = process.env.PORT || 3000;
-app.listen(PORT, () => console.log(`API rodando em http://localhost:${PORT}`));
+// Servir arquivos estáticos (frontend)
+app.use(express.static(path.join(__dirname, "..")));
 
-import path from "path";
-import express from "express";
-
-const __dirname = path.resolve();
-
-app.use(express.static(__dirname)); // serve arquivos estáticos (HTML, CSS, JS)
-
+// Rota principal → acesso.html
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "acesso.html"));
+  res.sendFile(path.join(__dirname, "..", "acesso.html"));
 });
 
+// Rota /site → site.html
 app.get("/site", (req, res) => {
-  res.sendFile(path.join(__dirname, "site.html"));
+  res.sendFile(path.join(__dirname, "..", "site.html"));
 });
+
+const PORT = process.env.PORT || 3000;
+app.listen(PORT, () => console.log(`✅ Servidor rodando na porta ${PORT}`));
