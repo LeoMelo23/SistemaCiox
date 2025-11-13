@@ -280,6 +280,17 @@ app.put("/api/clientes/:id", (req, res) => {
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () => console.log(`API rodando em http://localhost:${PORT}`));
 
+import path from "path";
+import express from "express";
+
+const __dirname = path.resolve();
+
+app.use(express.static(__dirname)); // serve arquivos estáticos (HTML, CSS, JS)
+
 app.get("/", (req, res) => {
-  res.sendFile(path.join(__dirname, "..", "acesso.html"));
+  res.sendFile(path.join(__dirname, "acesso.html"));
+});
+
+app.get("/site", (req, res) => {
+  res.sendFile(path.join(__dirname, "site.html"));
 });
