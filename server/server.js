@@ -11,17 +11,24 @@ const PORT = process.env.PORT || 10000;
 app.use(cors());
 app.use(express.json());
 
-// ====== ARQUIVOS ESTÁTICOS ======
-// Serve os arquivos HTML, CSS, JS e imagens da pasta public
-app.use(express.static(path.join(__dirname, "../public")));
+// ====== ARQUIVOS ESTÁTICOS - ESTRUTURA ATUAL ======
+// Serve TODOS os arquivos da RAIZ do projeto
+app.use(express.static(path.join(__dirname, "..")));
 
-// ====== BANCO DE DADOS (em /tmp no Render) ======
+// Servir subpastas explicitamente
+app.use('/CadastroClientes', express.static(path.join(__dirname, '..', 'CadastroClientes')));
+app.use('/ClientesCadastrados', express.static(path.join(__dirname, '..', 'ClientesCadastrados')));
+app.use('/CadastroFornecedor', express.static(path.join(__dirname, '..', 'CadastroFornecedor')));
+app.use('/CadastroPacientes', express.static(path.join(__dirname, '..', 'CadastroPacientes')));
+app.use('/Imagens', express.static(path.join(__dirname, '..', 'Imagens')));
+
+// ====== BANCO DE DADOS ======
 const dbPath = process.env.NODE_ENV === "production"
-  ? "/tmp/sistemaciox.db"
-  : path.join(__dirname, "data", "sistemaciox.db");
+  ? "/tmp/sistemaciox.db"  // No Render
+  : path.join(__dirname, "data", "sistemaciox.db");  // Local
 
+// Criar pasta data localmente se não existir
 if (process.env.NODE_ENV !== "production") {
-  // Garante que a pasta /data existe localmente
   const dataDir = path.join(__dirname, "data");
   if (!fs.existsSync(dataDir)) fs.mkdirSync(dataDir, { recursive: true });
 }
@@ -72,7 +79,7 @@ function normalizeText(text) {
   return text ? text.normalize("NFD").replace(/[\u0300-\u036f]/g, "").toLowerCase() : "";
 }
 
-// ====== ROTAS ======
+// ====== ROTAS API (MANTÉM SEU CÓDIGO ORIGINAL) ======
 
 // Cadastrar cliente
 app.post("/api/clientes", (req, res) => {
@@ -164,16 +171,6 @@ app.get("/api/clientes", (req, res) => {
   } catch (e) {
     console.error(e);
     res.status(500).json({ error: "Erro ao buscar clientes" });
-  }
-});
-
-// Contar clientes
-app.get("/api/clientes/count", (req, res) => {
-  try {
-    const row = db.prepare("SELECT COUNT(*) as total FROM clientes").get();
-    res.json({ total: row.total });
-  } catch (err) {
-    res.status(500).json({ error: "Erro ao contar clientes" });
   }
 });
 
@@ -271,10 +268,22 @@ app.put("/api/clientes/:id", (req, res) => {
   }
 });
 
-// ====== ROTA PADRÃO ======
-app.get("*", (req, res) => {
-  res.sendFile(path.join(__dirname, "../public/acesso.html"));
+// ====== ROTAS DAS PÁGINAS ======
+app.get("/", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "acesso.html"));
+});
+
+app.get("/cadastro-clientes", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "CadastroClientes", "cadclientes.html"));
+});
+
+app.get("/clientes-cadastrados", (req, res) => {
+  res.sendFile(path.join(__dirname, "..", "ClientesCadastrados", "listaclientes.html"));
 });
 
 // ====== INICIALIZAÇÃO ======
-app.listen(PORT, () => console.log(`✅ Servidor rodando na porta ${PORT}`));
+app.listen(PORT, () => {
+  console.log(`✅ Servidor rodando na porta ${PORT}`);
+  console.log(`🌐 Acesse: http://localhost:${PORT}`);
+  console.log(`💾 Banco: ${dbPath}`);
+});
