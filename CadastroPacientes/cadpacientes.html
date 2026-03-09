@@ -6,6 +6,8 @@
   <title>Cadastro de Paciente</title>
   <link rel="stylesheet" href="cadpacientes.css" />
   <link rel="shortcut icon" href="certo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 </head>
 <body>
   <div class="container">
@@ -60,13 +62,14 @@
           </div>
           <div class="end2">
             <label for="cep">CEP:</label>
-            <input type="text" id="cep" name="cep" />
+            <input type="text" id="cep" name="cep" maxlength="9" />
             <label for="cidade">Cidade:</label>
             <input type="text" id="cidade" name="cidade" />
             <label for="complemento">Complemento:</label>
             <input type="text" id="complemento" name="complemento" />
           </div>
         </div>
+          <button type="button" id="abrirMapa">Selecionar no Mapa</button>
       </div>
 
       <!-- ENDEREÇO RURAL -->
@@ -77,6 +80,8 @@
           <label for="ponto">Ponto de Referência:</label>
           <input type="text" id="ponto" name="ponto" />
         </div>
+        <button type="button" id="abrirMapaRural">
+        Selecionar no mapa</button>
       </div>
 
        <h3>CILINDRO</h3>
@@ -86,7 +91,7 @@
       <div id="template-cilindro">
         <div class="grupo-cilindro">
           <button type="button" class="remover-cilindro">
-            <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-status/128/user-trash-icon.png" id="lixo" />
+            <img src="\Imagens\lata-de-lixo.png" id="lixo" />
           </button>
           <hr />
 
@@ -240,7 +245,6 @@
 
       <div class="transcioxprop"  data-show-if="transsim" >
         <div class="radio-group">
-              
               <input type="radio" name="transcioxpropria" id="ciox">
               <label for="CIOX">CIOX</label>
               <input type="radio" name="transcioxpropria" id="propria">
@@ -249,10 +253,29 @@
 
 
       </div>
-
-     
-
     </div>
+
+<div class="base">
+<label for="base">Base:</label>
+<div class="radio-group">
+  <input type="radio" name="base" id="basesim" value="basesim">
+  <label for="basesim">Sim</label>
+  <input type="radio" name="base" id="basenao" value="basenao">
+  <label for="basenao">Não</label>
+</div>
+<div class="baseprop" data-show-if="basesim">
+  <div class="radio-group">
+    <input type="radio" name="basepropria" id="ciox">
+    <label for="CIOX">CIOX</label>
+    <input type="radio" name="basepropria" id="propria">
+    <label for="Prop">Própria</label>
+  </div>
+
+</div>
+
+
+</div>
+
 </div>
 
       </div>
@@ -260,9 +283,43 @@
       <button type="button" onclick="adicionarCilindro()">Adicionar Cilindro</button>
       <button type="submit" onclick="cadastrar(event)">Cadastrar</button>
     </form>
+
+       <div id="mapModal">
+  <div class="mapContainer">
+   <div class="coordenadas">
+     <button id="fecharMapa">Fechar</button>
+     <label for="lat">Latitude:</label>
+     <input type="text" id="lat" readonly>
+     <label for="lng">Longitude:</label>
+     <input type="text" id="lng" readonly>
+   </div>
+    <div id="mapFull"></div>
+  </div>
+</div>
+
+<div id="mapModalRural">
+  <div class="mapContainer">
+
+   <div class="coordenadas">
+     <button id="fecharMapaRural">Fechar</button>
+
+     <label for="lat_rural_view">Latitude:</label>
+     <input type="text" id="lat_rural_view">
+
+     <label for="lng_rural_view">Longitude:</label>
+     <input type="text" id="lng_rural_view">
+   </div>
+
+    <div id="mapFullRural"></div>
+
+  </div>
+</div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+   <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="cadpacientes.js"></script>
 </body>
 </html>

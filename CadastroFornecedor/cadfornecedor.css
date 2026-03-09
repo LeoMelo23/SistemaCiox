@@ -130,7 +130,7 @@ button:hover {
 .dados1,.contato2,.end1,.end2,.end3,.dados3{
   display: grid;
   grid-template-columns: auto 1fr auto 1fr; 
-  gap: 15px 15px; 
+  gap: 10px 15px; 
   align-items: center;
   
 }
@@ -184,4 +184,12 @@ label[for='email']{
 
 label[for='municipal']{
   white-space: nowrap;
+}
+
+label[for="uf"]{
+  margin-left: 12px;
+}
+
+label[for="cep"]{
+  margin-left: 12px;
 }

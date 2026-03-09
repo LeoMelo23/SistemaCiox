@@ -129,6 +129,7 @@ form > h3 {
 
 .dados1, .dados2, .end1, .end2{
   margin-bottom: 3px;
+  align-items: center;
 }
 
 
@@ -388,7 +389,7 @@ label[for='periloc']{
 }
 
 
-.suportes, .valvulas, .transformadores {
+.suportes, .valvulas, .transformadores,.base{
   display: grid;
   grid-template-columns: 200px auto;
   gap: 10px;
@@ -397,16 +398,17 @@ label[for='periloc']{
 }
 
 
-.valvprop, .transcioxprop {
+.valvprop, .transcioxprop,.baseprop {
   grid-column: 3;
   display: none;
   margin-top: 5px;
  
 }
 
-/* Mostrar sub-opções quando selecionado */
+
 input[type="radio"][value="valsim"]:checked ~ .valvprop,
-input[type="radio"][value="transsim"]:checked ~ .transcioxprop {
+input[type="radio"][value="transsim"]:checked ~ .transcioxprop
+input[type="radio"][value="basesim"]:checked ~ .baseprop {
   display: block;
 }
 
@@ -436,66 +438,63 @@ label[for='preco']{
   grid-template-columns: auto 400px auto 135px;
 }
 
-/* ===================== */
-/* 🔹 RESPONSIVIDADE 🔹 */
-/* ===================== */
-@media (max-width: 768px) {
 
-  .container {
-    padding: 20px;
-    width: 100%;
-    max-width: 95%;
-  }
 
-  /* Deixa os grids em uma única coluna */
-  .dados1, .dados2, .dados3,
-  .end1, .end2, .end3,
-  .selectam, .ops, .valv,
-  .inifim, .fini,
-  .suportes, .valvulas, .transformadores {
-    grid-template-columns: 1fr;
-  }
-
-  /* Ajusta inputs e selects para ocuparem 100% */
-  input, select {
-    width: 100%;
-  }
-
-  /* Remove margens horizontais */
-  label {
-    margin-top: 10px;
-  }
-
-  /* Botões empilhados com espaçamento */
-  button {
-    width: 100%;
-    margin-top: 15px;
-  }
-
-  /* Ajusta grupos de rádio */
-  .radio-group {
-    flex-wrap: wrap;
-    gap: 10px;
-  }
-
-  /* Centraliza título e campos */
-  h1 {
-    font-size: 22px;
-  }
-
-  /* Diminui padding nos títulos de seção */
-  h3 {
-    margin-top: 20px;
-  }
-
-  /* Lixo (botão remover cilindro) */
-  .remover-cilindro {
-    top: 5px;
-    right: 5px;
-  }
-
-  #lixo {
-    width: 20px;
-    height: 20px;
-  }
+#map{
+  width: 100%;
+  height: 450px;
+  margin-bottom: 10px;
+  border-radius: 5px;
+ 
 }
+
+#mapModal,#mapModalRural{
+  display:none;
+  position:fixed;
+  top:0;
+  left:0;
+  width:100%;
+  height:100%;
+  background:rgba(0,0,0,0.6);
+  z-index:9999;
+  align-items: center;
+}
+
+.mapContainer{
+  position:absolute;
+  top:5%;
+  left:5%;
+  width:90%;
+  height:90%;
+  background:white;
+  border-radius:8px;
+  padding:10px;
+}
+
+#mapFull,#mapFullRural{
+  width:100%;
+  height:90%;
+}
+
+#fecharMapa{
+  margin-bottom:5px;
+}
+
+.coordenadas{
+  display: grid;
+  grid-template-columns: 80px 90px 150px 90px 150px;
+  align-items: center;
+  gap: 10px;
+  margin-bottom: 15px;
+}
+#mapModalRural{
+  display: none;
+}
+#mapRural{
+  height: 400px;
+}
+
+label[for="cep"]{
+  margin-left: 5px;
+}
+

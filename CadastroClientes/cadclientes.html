@@ -4,8 +4,10 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Cadastro de Cliente</title>
-  <link rel="stylesheet" href="cadclientes.css" />
+  <link rel="stylesheet" href="cadclientes.css"/>
   <link rel="shortcut icon" href="logo.png" type="image/x-icon" />
+  <link rel="stylesheet" href="https://unpkg.com/leaflet/dist/leaflet.css"/>
+<link rel="stylesheet" href="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.css"/>
 </head>
 <body>
   <div class="container">
@@ -66,8 +68,9 @@
 
       <!--ENDEREÇO URBANO-->
       <div id="form-urbano">
-        <div class="end">
-          <div class="end1">
+
+            <div class="end">
+            <div class="end1">
             <label for="endereco">Logradouro:</label>
             <input type="text" id="endereco" name="endereco" />
             <label for="numero">Número:</label>
@@ -82,6 +85,8 @@
             <input type="text" id="complemento" name="complemento" />
           </div>
         </div>
+        <button type="button" id="abrirMapa">Selecionar no Mapa</button>
+
       </div>
 
       <!--ENDEREÇO RURAL-->
@@ -92,7 +97,15 @@
           <label for="ponto">Ponto de Referência:</label>
           <input type="text" name="ponto" id="ponto">
         </div>
+
+        <input type="hidden" id="lat_rural" name="lat_rural">
+        <input type="hidden" id="lng_rural" name="lng_rural">
+        <button type="button" id="abrirMapaRural">
+        Selecionar no mapa</button>
+
       </div>
+
+    
 
       <!-- CILINDRO -->
       <h3>CILINDRO</h3>
@@ -102,7 +115,7 @@
       <div id="template-cilindro" style="display: none;">
         <div class="grupo-cilindro">
           <button type="button" class="remover-cilindro">
-            <img src="https://icons.iconarchive.com/icons/papirus-team/papirus-status/128/user-trash-icon.png" class="lixo">
+            <img src="\Imagens\lata-de-lixo.png" class="lixo">
           </button>
           
           <hr>
@@ -199,14 +212,49 @@
             </div>  
           </div>
         </div>
+        
       </div>
 
       <button type="button" onclick="adicionarCilindro()">Adicionar Cilindro</button>
       <button type="submit">Cadastrar</button>
     </form>
+    
+        <div id="mapModal">
+  <div class="mapContainer">
+   <div class="coordenadas">
+     <button id="fecharMapa">Fechar</button>
+     <label for="lat">Latitude:</label>
+     <input type="text" id="lat" readonly>
+     <label for="lng">Longitude:</label>
+     <input type="text" id="lng" readonly>
+   </div>
+    <div id="mapFull"></div>
+  </div>
+</div>
+
+<div id="mapModalRural">
+  <div class="mapContainer">
+
+   <div class="coordenadas">
+     <button id="fecharMapaRural">Fechar</button>
+
+     <label for="lat_rural_view">Latitude:</label>
+     <input type="text" id="lat_rural_view">
+
+     <label for="lng_rural_view">Longitude:</label>
+     <input type="text" id="lng_rural_view">
+   </div>
+
+    <div id="mapFullRural"></div>
+
+  </div>
+</div>
+
   </div>
 
   <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+  <script src="https://unpkg.com/leaflet/dist/leaflet.js"></script>
+  <script src="https://unpkg.com/leaflet-control-geocoder/dist/Control.Geocoder.js"></script>
   <script src="cadcliente.js"></script>
 </body>
 </html>
