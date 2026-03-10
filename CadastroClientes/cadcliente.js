@@ -1030,88 +1030,159 @@ document.getElementById("cep").addEventListener("blur", dispararBusca);
 let mapRural;
 let markerRural;
 
-
-// ABRIR MAPA RURAL
+/* ABRIR MAPA RURAL */
 document.getElementById("abrirMapaRural").addEventListener("click", function(){
 
- document.getElementById("mapModalRural").style.display = "block";
+  document.getElementById("mapModalRural").style.display = "block";
 
- if(!mapRural){
+  if(!mapRural){
 
-  mapRural = L.map('mapFullRural').setView([-14.2350, -51.9253], 4);
+    mapRural = L.map("mapFullRural").setView([-22.217, -49.95], 13);
 
-  L.tileLayer('https://tile.openstreetmap.org/{z}/{x}/{y}.png',{
-   maxZoom:19
-  }).addTo(mapRural);
+    L.tileLayer("https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png",{
+      attribution: "© OpenStreetMap"
+    }).addTo(mapRural);
 
-  markerRural = L.marker([-22.1250,-49.5645], {draggable:true})
-  .addTo(mapRural);
+    /* CRIA MARCADOR UMA VEZ */
+    markerRural = L.marker([-22.217, -49.95], { draggable:true }).addTo(mapRural);
 
+    atualizarCampos(-22.217, -49.95);
 
-  /* CLICK NO MAPA */
-  mapRural.on("click", function(e){
+    /* CLICAR NO MAPA */
+    mapRural.on("click", function(e){
 
-    const lat = e.latlng.lat;
-    const lng = e.latlng.lng;
+      const lat = e.latlng.lat;
+      const lng = e.latlng.lng;
 
-    markerRural.setLatLng([lat,lng]);
+      markerRural.setLatLng([lat,lng]);
+      atualizarCampos(lat,lng);
 
-    document.getElementById("lat_rural_view").value = lat;
-    document.getElementById("lng_rural_view").value = lng;
+    });
 
-    document.getElementById("lat_rural").value = lat;
-    document.getElementById("lng_rural").value = lng;
+    /* ARRASTAR MARCADOR */
+    markerRural.on("dragend", function(){
 
-  });
+      const pos = markerRural.getLatLng();
+      atualizarCampos(pos.lat,pos.lng);
 
+    });
 
-  /* ARRASTAR MARCADOR */
-  markerRural.on("dragend", function(){
+  }
 
-    const pos = markerRural.getLatLng();
+  setTimeout(()=>{
 
-    document.getElementById("lat_rural_view").value = pos.lat;
-    document.getElementById("lng_rural_view").value = pos.lng;
+    mapRural.invalidateSize();
 
-    document.getElementById("lat_rural").value = pos.lat;
-    document.getElementById("lng_rural").value = pos.lng;
-
-  });
-
- }
-
-
- /* FORÇA REDIMENSIONAMENTO */
- setTimeout(()=>{
-
-  mapRural.invalidateSize();
-  mapRural.setZoom(mapRural.getZoom());
-
- },500);
+  },500);
 
 });
 
 
-// FECHAR MAPA RURAL
-document.getElementById("fecharMapaRural").addEventListener("click", function(){
+/* ATUALIZA INPUTS */
+function atualizarCampos(lat,lng){
 
- document.getElementById("mapModalRural").style.display = "none";
+  document.getElementById("lat_rural_view").value = lat.toFixed(6);
+  document.getElementById("lng_rural_view").value = lng.toFixed(6);
 
-});document.getElementById("lat_rural_view").addEventListener("change", irParaCoordenadas);
+  document.getElementById("lat_rural").value = lat.toFixed(6);
+  document.getElementById("lng_rural").value = lng.toFixed(6);
+
+  buscarEndereco(lat,lng);
+
+}
+
+
+/* BUSCAR MUNICIPIO E REFERENCIA */
+async function buscarEndereco(lat,lng){
+
+  try{
+
+    const url = `https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`;
+
+    const response = await fetch(url);
+    const data = await response.json();
+
+    if(data.address){
+
+      const municipio =
+        data.address.city ||
+        data.address.town ||
+        data.address.village ||
+        data.address.municipality ||
+        "";
+
+      const referencia =
+        data.address.road ||
+        data.address.hamlet ||
+        data.address.neighbourhood ||
+        data.address.suburb ||
+        "Zona rural";
+
+      document.getElementById("municipio").value = municipio;
+      document.getElementById("ponto").value = referencia;
+
+    }
+
+  }catch(err){
+
+    console.log("Erro ao buscar endereço");
+
+  }
+
+}
+
+
+/* DIGITAR COORDENADAS */
+document.getElementById("lat_rural_view").addEventListener("change", irParaCoordenadas);
 document.getElementById("lng_rural_view").addEventListener("change", irParaCoordenadas);
 
 function irParaCoordenadas(){
 
- const lat = parseFloat(document.getElementById("lat_rural_view").value);
- const lng = parseFloat(document.getElementById("lng_rural_view").value);
+  const lat = parseFloat(document.getElementById("lat_rural_view").value);
+  const lng = parseFloat(document.getElementById("lng_rural_view").value);
 
- if(isNaN(lat) || isNaN(lng)) return;
+  if(isNaN(lat) || isNaN(lng)) return;
 
- markerRural.setLatLng([lat,lng]);
+  markerRural.setLatLng([lat,lng]);
+  mapRural.setView([lat,lng],16);
 
- mapRural.setView([lat,lng], 16);
-
- document.getElementById("lat_rural").value = lat;
- document.getElementById("lng_rural").value = lng;
+  atualizarCampos(lat,lng);
 
 }
+
+
+/* LOCALIZAÇÃO EM TEMPO REAL */
+function usarLocalizacao(){
+
+  if(!navigator.geolocation){
+    alert("Geolocalização não suportada.");
+    return;
+  }
+
+  navigator.geolocation.getCurrentPosition(function(position){
+
+    const lat = position.coords.latitude;
+    const lng = position.coords.longitude;
+
+    mapRural.setView([lat,lng],16);
+    markerRural.setLatLng([lat,lng]);
+
+    atualizarCampos(lat,lng);
+
+  },
+  function(){
+    alert("Erro ao obter localização.");
+  },
+  {
+    enableHighAccuracy:true
+  });
+
+}
+
+
+/* FECHAR MAPA */
+document.getElementById("fecharMapaRural").addEventListener("click", function(){
+
+  document.getElementById("mapModalRural").style.display = "none";
+
+});

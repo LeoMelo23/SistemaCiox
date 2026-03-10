@@ -409,9 +409,9 @@ label[for='indet']{
   margin-bottom:5px;
 }
 
-.coordenadas{
+.coordenadasrural{
   display: grid;
-  grid-template-columns: 80px 90px 150px 90px 150px;
+  grid-template-columns: 80px 1fr 80px auto 80px auto;
   align-items: center;
   gap: 10px;
   margin-bottom: 15px;
@@ -421,4 +421,15 @@ label[for='indet']{
 }
 #mapRural{
   height: 400px;
+}
+.localizacaoreal {
+ width: 200px;
+ white-space: nowrap;
+ align-items: center;
+}
+.coordenadas{
+  display: grid;
+  grid-template-columns: 80px 90px 120px 90px 120px ;
+  align-items: center;
+  gap: 15px;
 }
