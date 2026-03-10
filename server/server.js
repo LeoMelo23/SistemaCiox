@@ -73,9 +73,18 @@ CREATE TABLE IF NOT EXISTS cilindros (
   inicio TEXT,
   fim TEXT,
   aplicado TEXT,
+  proprietario TEXT,
   FOREIGN KEY (cliente_id) REFERENCES clientes(id) ON DELETE CASCADE
 );
 `);
+
+try {
+  db.exec(`ALTER TABLE cilindros ADD COLUMN proprietario TEXT;`);
+} catch (e) {
+  if (!String(e.message).includes("duplicate column name")) {
+    throw e;
+  }
+}
 
 // -------- ROTAS --------
 
