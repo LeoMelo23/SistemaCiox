@@ -1027,10 +1027,6 @@ document.getElementById("cidade").addEventListener("blur", dispararBusca);
 document.getElementById("cep").addEventListener("blur", dispararBusca);
 
 
-/* ================================================= */
-/* MAPA RURAL */
-/* ================================================= */
-
 let mapRural;
 let markerRural;
 
