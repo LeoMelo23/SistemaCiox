@@ -2,7 +2,8 @@
 // ==============================
 // Configurações e estado global
 // ==============================
-const API_BASE = "http://localhost:3000";
+/* const API_BASE = "http://localhost:3000"; */
+const API_BASE = "";
 let modoEdicao = false;
 let clienteId = null;
 let enviando = false;
@@ -865,8 +866,11 @@ let map;
 let marker;
 let timeoutBusca;
 
+/* ================================================= */
+/* MAPA URBANO */
+/* ================================================= */
 
-// ABRIR MAPA
+/* ABRIR MAPA */
 document.getElementById("abrirMapa").addEventListener("click", function(){
 
  document.getElementById("mapModal").style.display = "block";
@@ -882,7 +886,7 @@ document.getElementById("abrirMapa").addEventListener("click", function(){
   marker = L.marker([-22.1250,-49.5645], {draggable:true}).addTo(map);
 
 
-  // CLICK NO MAPA
+  /* CLICK NO MAPA */
   map.on("click", function(e){
 
     const lat = e.latlng.lat;
@@ -893,12 +897,12 @@ document.getElementById("abrirMapa").addEventListener("click", function(){
     document.getElementById("lat").value = lat;
     document.getElementById("lng").value = lng;
 
-    buscarEndereco(lat,lng);
+    buscarEnderecoUrbano(lat,lng);
 
   });
 
 
-  // ARRASTAR MARCADOR
+  /* ARRASTAR MARCADOR */
   marker.on("dragend", function(){
 
     const pos = marker.getLatLng();
@@ -906,13 +910,12 @@ document.getElementById("abrirMapa").addEventListener("click", function(){
     document.getElementById("lat").value = pos.lat;
     document.getElementById("lng").value = pos.lng;
 
-    buscarEndereco(pos.lat,pos.lng);
+    buscarEnderecoUrbano(pos.lat,pos.lng);
 
   });
 
  }
 
- // FORÇA REDIMENSIONAMENTO
  setTimeout(()=>{
   map.invalidateSize();
   map.setZoom(map.getZoom());
@@ -921,23 +924,17 @@ document.getElementById("abrirMapa").addEventListener("click", function(){
 });
 
 
-// FECHAR MAPA
+/* FECHAR MAPA */
 document.getElementById("fecharMapa").addEventListener("click", function(){
  document.getElementById("mapModal").style.display = "none";
 });
 
 
-
-/* ------------------------------------------------ */
-/* BUSCAR ENDEREÇO PELAS COORDENADAS */
-/* ------------------------------------------------ */
-
-function buscarEndereco(lat,lng){
+/* BUSCAR ENDEREÇO URBANO */
+function buscarEnderecoUrbano(lat,lng){
 
  fetch(`https://nominatim.openstreetmap.org/reverse?format=json&lat=${lat}&lon=${lng}`,{
-   headers:{
-     "Accept-Language":"pt-BR"
-   }
+   headers:{ "Accept-Language":"pt-BR" }
  })
  .then(res => res.json())
  .then(data => {
@@ -948,7 +945,13 @@ function buscarEndereco(lat,lng){
 
    document.getElementById("endereco").value = addr.road || "";
    document.getElementById("numero").value = addr.house_number || "";
-   document.getElementById("cidade").value = addr.city || addr.town || addr.village || "";
+   document.getElementById("cidade").value =
+     addr.city ||
+     addr.town ||
+     addr.village ||
+     addr.municipality ||
+     "";
+
    document.getElementById("cep").value = addr.postcode || "";
 
  });
@@ -956,11 +959,7 @@ function buscarEndereco(lat,lng){
 }
 
 
-
-/* ------------------------------------------------ */
 /* LOCALIZAR ENDEREÇO DIGITADO */
-/* ------------------------------------------------ */
-
 function localizarEndereco(){
 
  const endereco = document.getElementById("endereco").value;
@@ -972,9 +971,7 @@ function localizarEndereco(){
  if(busca.trim() === "") return;
 
  fetch(`https://nominatim.openstreetmap.org/search?format=json&limit=1&q=${encodeURIComponent(busca)}`,{
-   headers:{
-     "Accept-Language":"pt-BR"
-   }
+   headers:{ "Accept-Language":"pt-BR" }
  })
  .then(res => res.json())
  .then(data => {
@@ -1000,11 +997,7 @@ function localizarEndereco(){
 }
 
 
-
-/* ------------------------------------------------ */
-/* CONTROLE DE BUSCA (DEBOUNCE) */
-/* ------------------------------------------------ */
-
+/* CONTROLE DE BUSCA */
 function dispararBusca(){
 
  clearTimeout(timeoutBusca);
@@ -1016,19 +1009,21 @@ function dispararBusca(){
 }
 
 
-
-/* ------------------------------------------------ */
-/* EVENTOS DOS CAMPOS */
-/* ------------------------------------------------ */
-
+/* EVENTOS INPUT */
 document.getElementById("endereco").addEventListener("blur", dispararBusca);
 document.getElementById("numero").addEventListener("blur", dispararBusca);
 document.getElementById("cidade").addEventListener("blur", dispararBusca);
 document.getElementById("cep").addEventListener("blur", dispararBusca);
 
 
+
+/* ================================================= */
+/* MAPA RURAL */
+/* ================================================= */
+
 let mapRural;
 let markerRural;
+
 
 /* ABRIR MAPA RURAL */
 document.getElementById("abrirMapaRural").addEventListener("click", function(){
@@ -1043,43 +1038,42 @@ document.getElementById("abrirMapaRural").addEventListener("click", function(){
       attribution: "© OpenStreetMap"
     }).addTo(mapRural);
 
-    /* CRIA MARCADOR UMA VEZ */
     markerRural = L.marker([-22.217, -49.95], { draggable:true }).addTo(mapRural);
 
-    atualizarCampos(-22.217, -49.95);
+    atualizarCamposRural(-22.217, -49.95);
 
-    /* CLICAR NO MAPA */
+
+    /* CLICK NO MAPA */
     mapRural.on("click", function(e){
 
       const lat = e.latlng.lat;
       const lng = e.latlng.lng;
 
       markerRural.setLatLng([lat,lng]);
-      atualizarCampos(lat,lng);
+      atualizarCamposRural(lat,lng);
 
     });
+
 
     /* ARRASTAR MARCADOR */
     markerRural.on("dragend", function(){
 
       const pos = markerRural.getLatLng();
-      atualizarCampos(pos.lat,pos.lng);
+      atualizarCamposRural(pos.lat,pos.lng);
 
     });
 
   }
 
   setTimeout(()=>{
-
     mapRural.invalidateSize();
-
   },500);
 
 });
 
 
-/* ATUALIZA INPUTS */
-function atualizarCampos(lat,lng){
+/* ATUALIZAR CAMPOS RURAL */
+function atualizarCamposRural(lat,lng){
 
   document.getElementById("lat_rural_view").value = lat.toFixed(6);
   document.getElementById("lng_rural_view").value = lng.toFixed(6);
@@ -1087,13 +1081,13 @@ function atualizarCampos(lat,lng){
   document.getElementById("lat_rural").value = lat.toFixed(6);
   document.getElementById("lng_rural").value = lng.toFixed(6);
 
-  buscarEndereco(lat,lng);
+  buscarEnderecoRural(lat,lng);
 
 }
 
 
-/* BUSCAR MUNICIPIO E REFERENCIA */
-async function buscarEndereco(lat,lng){
+/* BUSCAR ENDEREÇO RURAL */
+async function buscarEnderecoRural(lat,lng){
 
   try{
 
@@ -1146,7 +1140,7 @@ function irParaCoordenadas(){
   markerRural.setLatLng([lat,lng]);
   mapRural.setView([lat,lng],16);
 
-  atualizarCampos(lat,lng);
+  atualizarCamposRural(lat,lng);
 
 }
 
@@ -1167,7 +1161,7 @@ function usarLocalizacao(){
     mapRural.setView([lat,lng],16);
     markerRural.setLatLng([lat,lng]);
 
-    atualizarCampos(lat,lng);
+    atualizarCamposRural(lat,lng);
 
   },
   function(){
@@ -1180,7 +1174,7 @@ function usarLocalizacao(){
 }
 
 
-/* FECHAR MAPA */
+/* FECHAR MAPA RURAL */
 document.getElementById("fecharMapaRural").addEventListener("click", function(){
 
   document.getElementById("mapModalRural").style.display = "none";
