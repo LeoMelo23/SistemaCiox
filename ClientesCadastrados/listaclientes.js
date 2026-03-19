@@ -27,8 +27,8 @@ const gases = {
 // --- Carregar clientes ---
 async function carregarClientes() {
   try {
-   /*  const resp = await fetch("http://localhost:3000/api/clientes"); */
-    const resp = await fetch("/api/clientes");
+     const resp = await fetch("http://localhost:3000/api/clientes");  
+   /*  const resp = await fetch("/api/clientes"); */ 
     const lista = await resp.json();
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
@@ -234,8 +234,8 @@ async function excluirCliente(id) {
   if (!confirmacao.isConfirmed) return;
 
   try {
-   /*  const resp = await fetch(`http://localhost:3000/api/clientes/${id}` */
-       const resp = await fetch(`/api/clientes/${id}`, {
+     const resp = await fetch(`http://localhost:3000/api/clientes/${id}` 
+      /*  const resp = await fetch(`/api/clientes/${id}` */, {
       method: "DELETE"
     });
     const data = await resp.json();
@@ -266,8 +266,8 @@ function editarCliente(id) {
 // --- função para buscar detalhes de um cliente ---
 async function verDetalhes(id) {
   try {
-   /*  const resp = await fetch(`http://localhost:3000/api/clientes/${id}`) */
-       const resp = await fetch(`/api/clientes/${id}`);
+     const resp = await fetch(`http://localhost:3000/api/clientes/${id}`) 
+     /*   const resp = await fetch(`/api/clientes/${id}`); */
     const c = await resp.json();
 
     const labelCidade = c.area === 'rural' ? 'Município' : 'Cidade';

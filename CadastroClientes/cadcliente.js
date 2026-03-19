@@ -2,8 +2,8 @@
 // ==============================
 // Configurações e estado global
 // ==============================
-/* const API_BASE = "http://localhost:3000"; */
-const API_BASE = "";
+const API_BASE = "http://localhost:3000"; 
+/* const API_BASE = ""; */
 let modoEdicao = false;
 let clienteId = null;
 let enviando = false;
@@ -72,8 +72,10 @@ function maskDocumento(e) {
 
 function maskTelefone(e) {
   let v = onlyDigits(e.target.value);
-  if (v.length > 0) {
+  if (v.length ==11) {
     v = v.replace(/^(\d{2})(\d{5})(\d{4}).*/, '($1)$2-$3');
+  }else if(v.length==10){
+      v = v.replace(/^(\d{2})(\d{4})(\d{4}).*/, '($1)$2-$3');
   }
   e.target.value = v;
 }
@@ -469,9 +471,9 @@ function validarFormulario() {
   // Telefone
   const tel = $('#telefone');
   const telNum = onlyDigits(tel?.value);
-  if (tel && telNum.length !== 11) {
+  if (tel && telNum.length<10) {
     tel.classList.add('erro');
-    uniquePush(erros, 'Telefone inválido (use DDD + 9 dígitos)');
+    uniquePush(erros, 'Telefone inválido (Use DDD + 8 ou 9 Dígitos)');
   }
 
   // Área
