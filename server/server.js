@@ -1,9 +1,13 @@
 // CommonJS para evitar mexer no "type" do package.json"
+require("dotenv").config();
+const bcrypt = require("bcrypt");
+require("dotenv").config();
 const express = require("express");
 const cors = require("cors");
 const Database = require("better-sqlite3");
 const path = require("path");
 const fs = require("fs");
+
 
 const app = express();
 const PORT = process.env.PORT || 3000;
@@ -87,6 +91,27 @@ try {
 }
 
 // -------- ROTAS --------
+
+app.post("/login", async (req, res) => {
+  const { senha } = req.body;
+
+  try {
+    const senhaValida = await bcrypt.compare(
+      senha,
+      process.env.SENHA_HASH
+    );
+
+    if (senhaValida) {
+      return res.json({ sucesso: true });
+    }
+
+    return res.status(401).json({ sucesso: false });
+
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({ erro: "Erro no servidor" });
+  }
+});
 
 // Cadastrar cliente
 app.post("/api/clientes", (req, res) => {
@@ -306,6 +331,18 @@ app.put("/api/clientes/:id", (req, res) => {
 // ========== ROTA PARA PÁGINA INICIAL ==========
 app.get("/", (req, res) => {
   res.sendFile(path.join(__dirname, "..", "acesso.html"));
+});
+
+require("dotenv").config();
+
+app.post("/login", (req, res) => {
+  const { senha } = req.body;
+
+  if (senha === process.env.SENHA) {
+    return res.json({ sucesso: true });
+  }
+
+  return res.status(401).json({ sucesso: false });
 });
 
 // ========== INICIAR SERVIDOR ==========

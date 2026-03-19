@@ -36,8 +36,8 @@ function showSlides() {
 
 async function carregarTotalClientes() {
   try {
-   const res = await fetch("http://localhost:3000/api/clientes/count");
-   /*  const res = await fetch("/api/clientes/count"); */
+  /*  const res = await fetch("http://localhost:3000/api/clientes/count"); */
+    const res = await fetch("/api/clientes/count"); 
     const data = await res.json();
     document.getElementById("total-clientes").innerText = data.total;
   } catch (err) {

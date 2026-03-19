@@ -56,19 +56,33 @@
   </div>
 
   <script>
-    const SENHA_CORRETA = "sistemac10x2025"; // 🔒 Defina aqui a senha
+    async function entrar() {
+  const senha = document.getElementById("senha").value;
+  const erro = document.getElementById("erro");
 
-    function entrar() {
-    const senha = document.getElementById("senha").value;
-    const erro = document.getElementById("erro");
+  try {
+    const res = await fetch("http://localhost:3000/login", {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json"
+      },
+      body: JSON.stringify({ senha })
+    });
 
-    if (senha === SENHA_CORRETA) {
+    const data = await res.json();
+
+    if (data.sucesso) {
       sessionStorage.setItem("acessoCiox", "autorizado");
       window.location.href = "site.html";
     } else {
       erro.style.display = "block";
     }
+  } catch (err) {
+    console.error(err);
+    erro.style.display = "block";
   }
+}
+
 
   // ✅ Permite pressionar Enter para acessar
   document.getElementById("senha").addEventListener("keypress", function (e) {
