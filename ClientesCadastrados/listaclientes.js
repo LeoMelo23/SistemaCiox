@@ -24,11 +24,16 @@ const gases = {
   usp: "COS2 USP"
 };
 
+const API_BASE =
+  (window.location.hostname === "localhost" || window.location.hostname === "127.0.0.1")
+    ? "http://localhost:3000"
+    : "";
+
 // --- Carregar clientes ---
 async function carregarClientes() {
   try {
-    /*  const resp = await fetch("http://localhost:3000/api/clientes");   */
-    const resp = await fetch("/api/clientes"); 
+    const resp = await fetch(`${API_BASE}/api/clientes`);
+    if (!resp.ok) throw new Error(`Falha ao buscar clientes (${resp.status})`);
     const lista = await resp.json();
     const tbody = document.querySelector("#tabela tbody");
     tbody.innerHTML = "";
@@ -235,9 +240,10 @@ async function excluirCliente(id) {
 
   try {
     /*  const resp = await fetch(`http://localhost:3000/api/clientes/${id}`  */
-       const resp = await fetch(`/api/clientes/${id}`, {
+       const resp = await fetch(`${API_BASE}/api/clientes/${id}`, {
       method: "DELETE"
     });
+    if (!resp.ok) throw new Error(`Falha ao excluir cliente (${resp.status})`);
     const data = await resp.json();
 
     if (data.ok) {
@@ -267,7 +273,8 @@ function editarCliente(id) {
 async function verDetalhes(id) {
   try {
     /*  const resp = await fetch(`http://localhost:3000/api/clientes/${id}`)  */
-        const resp = await fetch(`/api/clientes/${id}`); 
+        const resp = await fetch(`${API_BASE}/api/clientes/${id}`);
+    if (!resp.ok) throw new Error(`Falha ao buscar detalhes (${resp.status})`);
     const c = await resp.json();
 
     const labelCidade = c.area === 'rural' ? 'Município' : 'Cidade';
